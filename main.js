@@ -173,7 +173,6 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
             updateIMGTexture();
         });
     }
-
     function updateIMGTexture(){
         if (mesh && texture) mesh.traverse( function ( child ) {
             if ( child instanceof THREE.Mesh ) {
@@ -185,7 +184,6 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
 
 
     function loadMaterial(url, ddsURLs){
-        THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
         var mtlLoader = new THREE.MTLLoader();
         mtlLoader.setBaseUrl( '' );
 		mtlLoader.setPath( '' );
@@ -198,9 +196,9 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
             _materials.preload();
             materials = _materials;
             texture = null;//remove any previously loaded img texture
-            loadOBJ();//reload obj with new materisl
+            if (mesh) scene.remove(mesh);//not sure how to update mtl without reloaded obj yet, need to remove from scene first
+            loadOBJ();//reload obj with new material
         });
-
     }
 
     function loadOBJ(url){
