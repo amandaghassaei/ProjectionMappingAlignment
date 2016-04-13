@@ -53,12 +53,27 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
 
     //handle files
     var objURL;
-    var materials;
+    var mesh;
+    var materials;//load from mtl
+    var texture;//load from img
 
     function handleFileSelectMaterials(evt) {
         var files = evt.target.files; // FileList object
         if (files.length < 1) {
             console.warn("no files");
+            return;
+        }
+
+        if (files.length == 1 && files[0].type.match('image.*')){
+            //load image as texture
+            var file = files[0];
+            var reader = new FileReader();
+            reader.onload = function(){
+                return function(e) {
+                    loadImage(e.target.result);
+                }
+            }(file);
+            reader.readAsDataURL(file);
             return;
         }
 
@@ -146,6 +161,29 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
     }
 
 
+    function loadImage(url){
+        var manager = new THREE.LoadingManager();
+        var loader = new THREE.ImageLoader( manager );
+        loader.load(url, function ( image ) {
+            texture = new THREE.Texture();
+            texture.image = image;
+            texture.needsUpdate = true;
+            materials = null;//remove any previously loaded mtl
+            //apply to previously loaded mesh
+            updateIMGTexture();
+        });
+    }
+
+    function updateIMGTexture(){
+        if (mesh && texture) mesh.traverse( function ( child ) {
+            if ( child instanceof THREE.Mesh ) {
+                child.material.map = texture;
+                child.material.needsUpdate = true;
+            }
+        });
+    }
+
+
     function loadMaterial(url, ddsURLs){
         THREE.Loader.Handlers.add( /\.dds$/i, new THREE.DDSLoader() );
         var mtlLoader = new THREE.MTLLoader();
@@ -160,6 +198,7 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
             console.log(_materials.materialsInfo);
             _materials.preload();
             materials = _materials;
+            texture = null;//remove any previously loaded img texture
             loadOBJ();//reload obj with new materisl
         });
 
@@ -182,6 +221,8 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
 
         if (materials) objLoader.setMaterials(materials);
         objLoader.load(url, function ( object ) {
+            mesh = object;//save to global scope
+            updateIMGTexture();
             object.position.y = - 95;
             scene.add( object );
         }, onProgress, onError );
