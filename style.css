@@ -1,0 +1,23 @@
+#three {
+    width:100%;
+    height:100%;
+}
+
+body{
+    margin: 0;
+}
+
+#controls{
+    width: 300px;
+    height: 100px;
+    padding: 20px;
+    position: absolute;
+    top: 0;
+    z-index: 2;
+    right: 0;
+    background: white;
+}
+
+input {
+    display: none;
+}
