@@ -195,7 +195,6 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
                 //change map_kd to data url
                 _materials.materialsInfo[_materialsKeys[i]].map_kd = ddsURLs[_materials.materialsInfo[_materialsKeys[i]].map_kd];
             }
-            console.log(_materials.materialsInfo);
             _materials.preload();
             materials = _materials;
             texture = null;//remove any previously loaded img texture
