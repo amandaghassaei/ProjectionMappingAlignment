@@ -196,7 +196,6 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
             _materials.preload();
             materials = _materials;
             texture = null;//remove any previously loaded img texture
-            if (mesh) scene.remove(mesh);//not sure how to update mtl without reloaded obj yet, need to remove from scene first
             loadOBJ();//reload obj with new material
         });
     }
@@ -218,6 +217,7 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
 
         if (materials) objLoader.setMaterials(materials);
         objLoader.load(url, function ( object ) {
+            if (mesh) scene.remove(mesh);//remove old mesh from scene
             mesh = object;//save to global scope
             updateIMGTexture();
             object.position.y = - 95;
