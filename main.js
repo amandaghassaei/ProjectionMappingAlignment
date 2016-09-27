@@ -13,6 +13,12 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
 
 window.onload = init;
 
+//handle files
+var objURL;
+var mesh;
+var materials;//load from mtl
+var texture;//load from img
+
 function init() {
     container = document.getElementById('three');
 
@@ -54,17 +60,10 @@ function init() {
         document.getElementById('files').click();
     });
 
-    initControls(ambient);
+    initControls(ambient, mesh);
 
     render();
 }
-
-
-//handle files
-var objURL;
-var mesh;
-var materials;//load from mtl
-var texture;//load from img
 
 function handleFileSelectMaterials(evt) {
     var files = evt.target.files; // FileList object
