@@ -9,16 +9,19 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
   alert('The File APIs are not fully supported in this browser.');
 }
 
-    var container, stats;
-    var camera, scene, renderer;
-    var mouseX = 0, mouseY = 0;
-    var windowHalfX = window.innerWidth / 2;
-    var windowHalfY = window.innerHeight / 2;
+    var container;
+    var camera, scene, renderer, controls;
     window.onload = init;
+
     function init() {
         container = document.getElementById('three');
-        camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 2000 );
+
+
+        camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 6000 );
+        //camera = new THREE.OrthographicCamera(window.innerWidth/-2, window.innerWidth/2, window.innerHeight/2, window.innerHeight/-2, 0.1, 1000);
         camera.position.z = 250;
+
+
         // scene
         scene = new THREE.Scene();
         var ambient = new THREE.AmbientLight( 0x444444 );
@@ -26,16 +29,19 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
         var directionalLight = new THREE.DirectionalLight( 0xffeedd );
         directionalLight.position.set( 0, 0, 1 ).normalize();
         scene.add( directionalLight );
-        //
+
         renderer = new THREE.WebGLRenderer();
         renderer.setPixelRatio( window.devicePixelRatio );
         renderer.setSize( window.innerWidth, window.innerHeight );
         container.appendChild( renderer.domElement );
-        document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-        //
+
+        controls = new THREE.OrbitControls(camera, container);
+        controls.addEventListener('change', render);
+
+
         window.addEventListener( 'resize', onWindowResize, false );
 
-        //events
+        //events for loading files
         document.getElementById('files').addEventListener('change', handleFileSelectMaterials, false);
         document.getElementById('file').addEventListener('change', handleFileSelectOBJ, false);
         document.getElementById('loadOBJ').addEventListener('click', function(e){
@@ -47,7 +53,7 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
             document.getElementById('files').click();
         });
 
-        animate();
+        render();
     }
 
 
@@ -222,33 +228,25 @@ if (window.File && window.FileReader && window.FileList && window.Blob) {
             updateIMGTexture();
             object.position.y = - 95;
             scene.add( object );
+            render();
         }, onProgress, onError );
     }
 
 
 
 
-
-
     function onWindowResize() {
-        windowHalfX = window.innerWidth / 2;
-        windowHalfY = window.innerHeight / 2;
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize( window.innerWidth, window.innerHeight );
-    }
-    function onDocumentMouseMove( event ) {
-        mouseX = ( event.clientX - windowHalfX ) / 2;
-        mouseY = ( event.clientY - windowHalfY ) / 2;
-    }
-    //
-    function animate() {
-        requestAnimationFrame( animate );
+        //camera.left = -window.innerWidth / 2;
+        //camera.right = window.innerWidth / 2;
+        //camera.top = window.innerHeight / 2;
+        //camera.bottom = -window.innerHeight / 2;
+        //camera.updateProjectionMatrix();
         render();
     }
+
     function render() {
-        camera.position.x += ( mouseX - camera.position.x ) * .05;
-        camera.position.y += ( - mouseY - camera.position.y ) * .05;
-        camera.lookAt( scene.position );
         renderer.render( scene, camera );
     }
