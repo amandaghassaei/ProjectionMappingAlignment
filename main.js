@@ -41,9 +41,9 @@ function init() {
     ambient.intensity = 1;
     scene.add( ambient );
     scene.add(origin);
-    //var directionalLight = new THREE.DirectionalLight( 0xffeedd );
-    //directionalLight.position.set( 0, 0, 1 ).normalize();
-    //scene.add( directionalLight );
+    var directionalLight = new THREE.DirectionalLight( 0xffeedd );
+    directionalLight.position.set( 0, 0, 1 ).normalize();
+    scene.add( directionalLight );
 
     renderer = new THREE.WebGLRenderer();
     renderer.setPixelRatio( window.devicePixelRatio );
