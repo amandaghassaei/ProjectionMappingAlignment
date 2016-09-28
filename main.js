@@ -47,10 +47,10 @@ function init() {
     renderer.setSize( window.innerWidth, window.innerHeight );
     container.appendChild( renderer.domElement );
 
-    perspectiveControls = new THREE.OrbitControls(perspectiveCamera, container);
-    perspectiveControls.addEventListener('change', render);
-    orthoControls = new THREE.OrbitControls(perspectiveCamera, container);
-    orthoControls.addEventListener('change', render);
+    //perspectiveControls = new THREE.OrbitControls(perspectiveCamera, container);
+    //perspectiveControls.addEventListener('change', render);
+    //orthoControls = new THREE.OrbitControls(orthoCamera, container);
+    //orthoControls.addEventListener('change', render);
 
 
     window.addEventListener( 'resize', onWindowResize, false );
@@ -250,16 +250,18 @@ function loadOBJ(url){
 
 function onWindowResize() {
     perspectiveCamera.aspect = window.innerWidth / window.innerHeight;
-    perspectiveCamera.updateProjectionMatrix();
+    orthoCamera.aspect = window.innerWidth / window.innerHeight;
     renderer.setSize( window.innerWidth, window.innerHeight );
-    //perspectiveCamera.left = -window.innerWidth / 2;
-    //perspectiveCamera.right = window.innerWidth / 2;
-    //perspectiveCamera.top = window.innerHeight / 2;
-    //perspectiveCamera.bottom = -window.innerHeight / 2;
-    //perspectiveCamera.updateProjectionMatrix();
+    orthoCamera.left = -window.innerWidth / 2;
+    orthoCamera.right = window.innerWidth / 2;
+    orthoCamera.top = window.innerHeight / 2;
+    orthoCamera.bottom = -window.innerHeight / 2;
+    perspectiveCamera.updateProjectionMatrix();
+    orthoCamera.updateProjectionMatrix();
     render();
 }
 
 function render() {
-    renderer.render( scene, perspectiveCamera );
+    if (isPerspective) renderer.render( scene, perspectiveCamera );
+    else renderer.render( scene, orthoCamera );
 }

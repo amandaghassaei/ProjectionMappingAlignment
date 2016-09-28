@@ -44,6 +44,11 @@ function initControls(ambientLight){
         if (mesh) mesh.children[0].position.x = val;
         render();
     });
+    setInput("#rotationY", geoOffset.y, function(val){
+        geoOffset.y = val;
+        if (mesh) mesh.children[0].position.y = val;
+        render();
+    });
     setInput("#rotationZ", geoOffset.z, function(val){
         geoOffset.z = val;
         if (mesh) mesh.children[0].position.z = val;
@@ -74,11 +79,15 @@ function initControls(ambientLight){
 
     setSliderInput("#fovOrtho", orthoFOV, 1, 180, 0.01, function(val){
         orthoFOV = val;
+        orthoCamera.fov = val;
+        orthoCamera.updateProjectionMatrix();
         render();
     });
 
     setSliderInput("#zoomOrtho", orthoZoom, 0.001, 20, 0.01, function(val){
         orthoZoom = val;
+        orthoCamera.zoom = val;
+        orthoCamera.updateProjectionMatrix();
         render();
     });
 
@@ -93,38 +102,64 @@ function initControls(ambientLight){
     });
 
     perspectiveCamera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z);
+    orthoCamera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z);
     setInput("#cameraX", cameraPosition.x, function(val){
         cameraPosition.x = val;
         perspectiveCamera.position.x = val;
+        orthoCamera.position.x = val;
         render();
     });
     setInput("#cameraY", cameraPosition.y, function(val){
         cameraPosition.y = val;
         perspectiveCamera.position.y = val;
+        orthoCamera.position.y = val;
         render();
     });
     setInput("#cameraZ", cameraPosition.z, function(val){
         cameraPosition.z = val;
         perspectiveCamera.position.z = val;
+        orthoCamera.position.z = val;
         render();
     });
 
     perspectiveCamera.lookAt(lookAt);
+    orthoCamera.lookAt(lookAt);
     setInput("#lookAtX", lookAt.x, function(val){
         lookAt.x = val;
         perspectiveCamera.lookAt(lookAt);
+        orthoCamera.lookAt(lookAt);
         render();
     });
     setInput("#lookAtY", lookAt.y, function(val){
         lookAt.y = val;
         perspectiveCamera.lookAt(lookAt);
+        orthoCamera.lookAt(lookAt);
         render();
     });
     setInput("#lookAtZ", lookAt.z, function(val){
         lookAt.z = val;
         perspectiveCamera.lookAt(lookAt);
+        orthoCamera.lookAt(lookAt);
         render();
     });
+
+    document.addEventListener( 'mouseup', function(){
+
+        perspectiveCamera.fov = perspecitveFOV;
+        perspectiveCamera.zoom = perspectiveZoom;
+        orthoCamera.fov = orthoFOV;
+        orthoCamera.zoom = orthoZoom;
+        perspectiveCamera.updateProjectionMatrix();
+        orthoCamera.updateProjectionMatrix();
+        perspectiveCamera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z);
+        orthoCamera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z);
+        perspectiveCamera.lookAt(lookAt);
+        orthoCamera.lookAt(lookAt);
+        perspectiveCamera.updateProjectionMatrix();
+        orthoCamera.updateProjectionMatrix();
+
+        render();
+    }, false );
 
 }
 
@@ -169,7 +204,7 @@ function setInput(el, val, callback){
     var $input = $(el+">input");
     $input.val(val);
     $input.change(function(){
-        var val = $input.val();
+        var val = parseFloat($input.val());
         if (isNaN(val)){
             console.warn("val in NaN");
             return;

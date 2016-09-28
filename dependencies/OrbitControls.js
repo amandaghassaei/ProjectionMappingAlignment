@@ -107,8 +107,8 @@ THREE.OrbitControls = function ( object, domElement ) {
 		scope.object.position.copy( scope.position0 );
 		scope.object.zoom = scope.zoom0;
 
-		scope.object.updateProjectionMatrix();
-		scope.dispatchEvent( changeEvent );
+		//scope.object.updateProjectionMatrix();
+		//scope.dispatchEvent( changeEvent );
 
 		scope.update();
 
