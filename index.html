@@ -48,15 +48,17 @@
     <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
     <input class="numInput" type="text">
     </div>
-    <div id="rotationX">obj X pos
+
+    <div id="rotationX">X origin
+    <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
     <input class="numInput" type="text">
     </div>
-    <div id="rotationY">obj Y pos
+
+    <div id="rotationZ">Z origin
+    <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
     <input class="numInput" type="text">
     </div>
-    <div id="rotationZ">obj Z pos
-    <input class="numInput" type="text">
-    </div>
+
     <br/>
 
     <div id="scale">scale
@@ -108,27 +110,43 @@
 
     <br/><br/>
 
-    Camera Pos (XYZ) &nbsp;<div class="inline" id="cameraX">
-    <input class="numInput" type="text">
+    Camera Pos (XYZ)<br/>
+    <div id="cameraX">
+        X
+        <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+        <input class="numInput" type="text">
     </div>
-    <div class="inline" id="cameraY">
-    <input class="numInput" type="text">
+    <div id="cameraY">
+        Y
+        <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+        <input class="numInput" type="text">
     </div>
-    <div class="inline" id="cameraZ">
-    <input class="numInput" type="text">
+    <div id="cameraZ">
+        Z
+        <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+        <input class="numInput" type="text">
     </div><br/><br/>
 
-    Look At (XYZ) &nbsp;<div class="inline" id="lookAtX">
-    <input class="numInput" type="text">
+
+    <div id="lookAtX">
+        Look At X
+        <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+        <input class="numInput" type="text">
     </div>
-    <div class="inline" id="lookAtY">
-    <input class="numInput" type="text">
+    <div id="lookAtY">
+        Look At Y
+        <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+        <input class="numInput" type="text">
     </div>
-    <div class="inline" id="lookAtZ">
-    <input class="numInput" type="text">
+    <div id="lookAtZ">
+        Look At Z &nbsp;<input class="numInput" type="text">
     </div>
+    <br/>
+    <input type="checkbox" id="showCrosshairs"/>&nbsp; Show Crosshairs
+
 
 </div>
+<img id="crosshairs" src="crosshairs.png">
 
 </body>
 </html>

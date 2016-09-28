@@ -5,7 +5,7 @@
 var brightness = 255;
 var opacity = 1;
 var rotation = 0;
-var geoOffset = new THREE.Vector3(0,0,0);
+var geoOffset = new THREE.Vector3(-0.462,0,-0.18);
 var scale = 1;
 
 var perspecitveFOV = 20;
@@ -16,7 +16,7 @@ var orthoZoom = 1;
 
 var isPerspective = true;
 
-var cameraPosition = new THREE.Vector3(0,0,300);
+var cameraPosition = new THREE.Vector3(0,140,790);
 var lookAt = new THREE.Vector3(0,0,0);
 
 function initControls(ambientLight){
@@ -39,23 +39,35 @@ function initControls(ambientLight){
         if (mesh) mesh.rotation.set(0,rotation,0);
         render();
     });
-    setInput("#rotationX", geoOffset.x, function(val){
+    setSliderInput("#rotationX", geoOffset.x, -1, 1, 0.01, function(val){
         geoOffset.x = val;
-        if (mesh) mesh.children[0].position.x = val;
-        render();
-    });
-    setInput("#rotationY", geoOffset.y, function(val){
-        geoOffset.y = val;
-        if (mesh) mesh.children[0].position.y = val;
-        render();
-    });
-    setInput("#rotationZ", geoOffset.z, function(val){
-        geoOffset.z = val;
-        if (mesh) mesh.children[0].position.z = val;
+        if (mesh) {
+            //var size = mesh.children[0].geometry.boundingBox.max.clone().sub(mesh.children[0].geometry.boundingBox.min);
+            //var scalingFactor = size.x;
+            //if (size.y>scalingFactor) scalingFactor = size.y;
+            //if (size.z>scalingFactor) scalingFactor = size.z;
+            //scalingFactor = 1/scalingFactor;
+            var scalingFactor = 0.09;
+            mesh.children[0].position.x = mesh.children[0].geometry.boundingBox.max.x*scalingFactor*val;
+        }
         render();
     });
 
-    setSliderInput("#scale", scale, 0.0001, 1, 0.01, function(val){
+    setSliderInput("#rotationZ", geoOffset.z, -1, 1, 0.01, function(val){
+        geoOffset.z = val;
+        if (mesh) {
+            //var size = mesh.children[0].geometry.boundingBox.max.clone().sub(mesh.children[0].geometry.boundingBox.min);
+            //var scalingFactor = size.x;
+            //if (size.y>scalingFactor) scalingFactor = size.y;
+            //if (size.z>scalingFactor) scalingFactor = size.z;
+            //scalingFactor = 1/scalingFactor;
+            var scalingFactor = 0.09;
+            mesh.children[0].position.z = mesh.children[0].geometry.boundingBox.max.z*scalingFactor*val;
+        }
+        render();
+    });
+
+    setSliderInput("#scale", scale, 0.0001, 10, 0.01, function(val){
         scale = val;
         if (mesh) mesh.scale.set(scale,scale,scale);
         render();
@@ -103,34 +115,40 @@ function initControls(ambientLight){
 
     perspectiveCamera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z);
     orthoCamera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z);
-    setInput("#cameraX", cameraPosition.x, function(val){
+    setSliderInput("#cameraX", cameraPosition.x, -100, 100, 0.01, function(val){
         cameraPosition.x = val;
         perspectiveCamera.position.x = val;
         orthoCamera.position.x = val;
+        perspectiveCamera.lookAt(lookAt);
+        orthoCamera.lookAt(lookAt);
         render();
     });
-    setInput("#cameraY", cameraPosition.y, function(val){
+    setSliderInput("#cameraY", cameraPosition.y, -300, 300, 0.01, function(val){
         cameraPosition.y = val;
         perspectiveCamera.position.y = val;
         orthoCamera.position.y = val;
+        perspectiveCamera.lookAt(lookAt);
+        orthoCamera.lookAt(lookAt);
         render();
     });
-    setInput("#cameraZ", cameraPosition.z, function(val){
+    setSliderInput("#cameraZ", cameraPosition.z, 0, 1000, 0.01, function(val){
         cameraPosition.z = val;
         perspectiveCamera.position.z = val;
         orthoCamera.position.z = val;
+        perspectiveCamera.lookAt(lookAt);
+        orthoCamera.lookAt(lookAt);
         render();
     });
 
     perspectiveCamera.lookAt(lookAt);
     orthoCamera.lookAt(lookAt);
-    setInput("#lookAtX", lookAt.x, function(val){
+    setSliderInput("#lookAtX", lookAt.x, -20, 20, 0.01, function(val){
         lookAt.x = val;
         perspectiveCamera.lookAt(lookAt);
         orthoCamera.lookAt(lookAt);
         render();
     });
-    setInput("#lookAtY", lookAt.y, function(val){
+    setSliderInput("#lookAtY", lookAt.y, -10, 300, 0.01, function(val){
         lookAt.y = val;
         perspectiveCamera.lookAt(lookAt);
         orthoCamera.lookAt(lookAt);
@@ -143,23 +161,35 @@ function initControls(ambientLight){
         render();
     });
 
-    document.addEventListener( 'mouseup', function(){
 
-        perspectiveCamera.fov = perspecitveFOV;
-        perspectiveCamera.zoom = perspectiveZoom;
-        orthoCamera.fov = orthoFOV;
-        orthoCamera.zoom = orthoZoom;
-        perspectiveCamera.updateProjectionMatrix();
-        orthoCamera.updateProjectionMatrix();
-        perspectiveCamera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z);
-        orthoCamera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z);
-        perspectiveCamera.lookAt(lookAt);
-        orthoCamera.lookAt(lookAt);
-        perspectiveCamera.updateProjectionMatrix();
-        orthoCamera.updateProjectionMatrix();
 
-        render();
-    }, false );
+    $('#showCrosshairs').prop('checked', true);
+    $('#showCrosshairs').change(function() {
+        var $crosshairs = $("#crosshairs");
+        if (this.checked) $crosshairs.show();
+        else $crosshairs.hide();
+    });
+
+
+
+
+    //document.addEventListener( 'mouseup', function(){
+    //
+    //    perspectiveCamera.fov = perspecitveFOV;
+    //    perspectiveCamera.zoom = perspectiveZoom;
+    //    orthoCamera.fov = orthoFOV;
+    //    orthoCamera.zoom = orthoZoom;
+    //    perspectiveCamera.updateProjectionMatrix();
+    //    orthoCamera.updateProjectionMatrix();
+    //    perspectiveCamera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z);
+    //    orthoCamera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z);
+    //    perspectiveCamera.lookAt(lookAt);
+    //    orthoCamera.lookAt(lookAt);
+    //    perspectiveCamera.updateProjectionMatrix();
+    //    orthoCamera.updateProjectionMatrix();
+    //
+    //    render();
+    //}, false );
 
 }
 

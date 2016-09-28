@@ -22,7 +22,7 @@ var mesh;
 var materials;//load from mtl
 var texture;//load from img
 
-var origin = new THREE.Mesh(new THREE.SphereGeometry(20), new THREE.MeshBasicMaterial({color:0xff0000}));
+var origin = new THREE.Mesh(new THREE.SphereGeometry(10), new THREE.MeshBasicMaterial({color:0xff0000}));
 
 
 function init() {
@@ -32,7 +32,7 @@ function init() {
     perspectiveCamera = new THREE.PerspectiveCamera( perspecitveFOV, window.innerWidth / window.innerHeight, 0.1, 6000 );
     perspectiveCamera.zoom = perspectiveZoom;
 
-    orthoCamera = new THREE.OrthographicCamera(window.innerWidth/-2, window.innerWidth/2, window.innerHeight/2, window.innerHeight/-2, 0.1, 1000);
+    orthoCamera = new THREE.OrthographicCamera(window.innerWidth/-2, window.innerWidth/2, window.innerHeight/2, window.innerHeight/-2, 0.1, 6000);
     orthoCamera.zoom = orthoCamera;
 
     // scene
@@ -41,9 +41,9 @@ function init() {
     ambient.intensity = 1;
     scene.add( ambient );
     scene.add(origin);
-    var directionalLight = new THREE.DirectionalLight( 0xffeedd );
-    directionalLight.position.set( 0, 0, 1 ).normalize();
-    scene.add( directionalLight );
+    //var directionalLight = new THREE.DirectionalLight( 0xffeedd );
+    //directionalLight.position.set( 0, 0, 1 ).normalize();
+    //scene.add( directionalLight );
 
     renderer = new THREE.WebGLRenderer();
     renderer.setPixelRatio( window.devicePixelRatio );
@@ -262,8 +262,28 @@ function loadOBJ(url){
             scene.remove(mesh);
         }//remove old mesh from scene
         mesh = object;//save to global scope
+
+        //var center = mesh.children[0].geometry.boundingBox.max.clone().add(mesh.children[0].geometry.boundingBox.min).multiplyScalar(0.5);
+        //mesh.children[0].position.set(-center.x, -center.y, -center.z);
+        mesh.children[0].geometry.center();
+        mesh.children[0].geometry.computeBoundingBox();
+
+        //var size = mesh.children[0].geometry.boundingBox.max.clone().sub(mesh.children[0].geometry.boundingBox.min);
+        //var scalingFactor = size.x;
+        //if (size.y>scalingFactor) scalingFactor = size.y;
+        //if (size.z>scalingFactor) scalingFactor = size.z;
+        //scalingFactor = 1/scalingFactor;
+        var scalingFactor = 0.09;
+        mesh.children[0].scale.set(scalingFactor, scalingFactor, scalingFactor);
+
+        //put origin in screwhole
+        mesh.children[0].position.y = mesh.children[0].geometry.boundingBox.max.y*scalingFactor;
+        mesh.children[0].position.x = mesh.children[0].geometry.boundingBox.max.x*scalingFactor*geoOffset.x;
+        mesh.children[0].position.z = mesh.children[0].geometry.boundingBox.max.z*scalingFactor*geoOffset.z;
+
+        mesh.position.set(0,0,0);
+
         updateIMGTexture();
-        object.position.y = - 95;
         scene.add( object );
         render();
     }, onProgress, onError );
