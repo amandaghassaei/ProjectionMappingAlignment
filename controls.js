@@ -16,6 +16,9 @@ var orthoZoom = 1;
 
 var isPerspective = true;
 
+var cameraPosition = new THREE.Vector3(0,0,300);
+var lookAt = new THREE.Vector3(0,0,0);
+
 function initControls(ambientLight){
 
     setSliderInput("#brightness", brightness, 0, 255, 1, function(val){
@@ -83,9 +86,43 @@ function initControls(ambientLight){
     else $("input:radio[value=ortho]").prop('checked', true);
     changeCamera();
 
-    $("input:radio[value='perspective']").change(function(){
+    $("input:radio").change(function(){
         isPerspective = $("input:radio[value=perspective]").prop('checked');
         changeCamera();
+        render();
+    });
+
+    perspectiveCamera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z);
+    setInput("#cameraX", cameraPosition.x, function(val){
+        cameraPosition.x = val;
+        perspectiveCamera.position.x = val;
+        render();
+    });
+    setInput("#cameraY", cameraPosition.y, function(val){
+        cameraPosition.y = val;
+        perspectiveCamera.position.y = val;
+        render();
+    });
+    setInput("#cameraZ", cameraPosition.z, function(val){
+        cameraPosition.z = val;
+        perspectiveCamera.position.z = val;
+        render();
+    });
+
+    perspectiveCamera.lookAt(lookAt);
+    setInput("#lookAtX", lookAt.x, function(val){
+        lookAt.x = val;
+        perspectiveCamera.lookAt(lookAt);
+        render();
+    });
+    setInput("#lookAtY", lookAt.y, function(val){
+        lookAt.y = val;
+        perspectiveCamera.lookAt(lookAt);
+        render();
+    });
+    setInput("#lookAtZ", lookAt.z, function(val){
+        lookAt.z = val;
+        perspectiveCamera.lookAt(lookAt);
         render();
     });
 
@@ -94,8 +131,10 @@ function initControls(ambientLight){
 function changeCamera(){
     if (isPerspective){
         $("#orthoControls").css("opacity","0.4");
+        $("#perspectiveControls").css("opacity","1");
     } else {
         $("#perspectiveControls").css("opacity","0.4");
+        $("#orthoControls").css("opacity","1");
     }
 }
 

@@ -53,6 +53,10 @@ input.numInput{
     display:inline-block;
 }
 
+.inline{
+    display: inline;
+}
+
 
 .slider.slider-horizontal {
     width: 160px;

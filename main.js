@@ -2,7 +2,7 @@
  * Created by ghassaei on 4/13/16.
  */
 
-var container, perspectiveCamera, orthoCamera, scene, renderer, perspectiveControls;
+var container, perspectiveCamera, orthoCamera, scene, renderer, orthoControls, perspectiveControls;
 
 // Check for the various File API support.
 if (window.File && window.FileReader && window.FileList && window.Blob) {
@@ -19,6 +19,8 @@ var mesh;
 var materials;//load from mtl
 var texture;//load from img
 
+var origin = new THREE.Mesh(new THREE.SphereGeometry(20), new THREE.MeshBasicMaterial({color:0xff0000}));
+
 
 function init() {
     container = document.getElementById('three');
@@ -28,14 +30,14 @@ function init() {
     perspectiveCamera.zoom = perspectiveZoom;
 
     orthoCamera = new THREE.OrthographicCamera(window.innerWidth/-2, window.innerWidth/2, window.innerHeight/2, window.innerHeight/-2, 0.1, 1000);
-    perspectiveCamera.position.z = 250;
-
+    orthoCamera.zoom = orthoCamera;
 
     // scene
     scene = new THREE.Scene();
     var ambient = new THREE.AmbientLight(0xffffff);
     ambient.intensity = 1;
     scene.add( ambient );
+    scene.add(origin);
     //var directionalLight = new THREE.DirectionalLight( 0xffeedd );
     //directionalLight.position.set( 0, 0, 1 ).normalize();
     //scene.add( directionalLight );
@@ -47,6 +49,8 @@ function init() {
 
     perspectiveControls = new THREE.OrbitControls(perspectiveCamera, container);
     perspectiveControls.addEventListener('change', render);
+    orthoControls = new THREE.OrbitControls(perspectiveCamera, container);
+    orthoControls.addEventListener('change', render);
 
 
     window.addEventListener( 'resize', onWindowResize, false );
