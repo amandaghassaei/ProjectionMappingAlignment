@@ -2,7 +2,7 @@
  * Created by ghassaei on 4/13/16.
  */
 
-var container, camera, scene, renderer, controls;
+var container, perspectiveCamera, orthoCamera, scene, renderer, perspectiveControls;
 
 // Check for the various File API support.
 if (window.File && window.FileReader && window.FileList && window.Blob) {
@@ -19,13 +19,16 @@ var mesh;
 var materials;//load from mtl
 var texture;//load from img
 
+
 function init() {
     container = document.getElementById('three');
 
 
-    camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 6000 );
-    //camera = new THREE.OrthographicCamera(window.innerWidth/-2, window.innerWidth/2, window.innerHeight/2, window.innerHeight/-2, 0.1, 1000);
-    camera.position.z = 250;
+    perspectiveCamera = new THREE.PerspectiveCamera( perspecitveFOV, window.innerWidth / window.innerHeight, 0.1, 6000 );
+    perspectiveCamera.zoom = perspectiveZoom;
+
+    orthoCamera = new THREE.OrthographicCamera(window.innerWidth/-2, window.innerWidth/2, window.innerHeight/2, window.innerHeight/-2, 0.1, 1000);
+    perspectiveCamera.position.z = 250;
 
 
     // scene
@@ -42,8 +45,8 @@ function init() {
     renderer.setSize( window.innerWidth, window.innerHeight );
     container.appendChild( renderer.domElement );
 
-    controls = new THREE.OrbitControls(camera, container);
-    controls.addEventListener('change', render);
+    perspectiveControls = new THREE.OrbitControls(perspectiveCamera, container);
+    perspectiveControls.addEventListener('change', render);
 
 
     window.addEventListener( 'resize', onWindowResize, false );
@@ -184,8 +187,10 @@ function loadImage(url){
 function updateIMGTexture(){
     if (mesh && texture) mesh.traverse( function ( child ) {
         if ( child instanceof THREE.Mesh ) {
+            child.material.transparent = true;
             child.material.map = texture;
             child.material.needsUpdate = true;
+            render();
         }
     });
 }
@@ -225,7 +230,9 @@ function loadOBJ(url){
 
     if (materials) objLoader.setMaterials(materials);
     objLoader.load(url, function ( object ) {
-        if (mesh) scene.remove(mesh);//remove old mesh from scene
+        if (mesh) {
+            scene.remove(mesh);
+        }//remove old mesh from scene
         mesh = object;//save to global scope
         updateIMGTexture();
         object.position.y = - 95;
@@ -238,17 +245,17 @@ function loadOBJ(url){
 
 
 function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
+    perspectiveCamera.aspect = window.innerWidth / window.innerHeight;
+    perspectiveCamera.updateProjectionMatrix();
     renderer.setSize( window.innerWidth, window.innerHeight );
-    //camera.left = -window.innerWidth / 2;
-    //camera.right = window.innerWidth / 2;
-    //camera.top = window.innerHeight / 2;
-    //camera.bottom = -window.innerHeight / 2;
-    //camera.updateProjectionMatrix();
+    //perspectiveCamera.left = -window.innerWidth / 2;
+    //perspectiveCamera.right = window.innerWidth / 2;
+    //perspectiveCamera.top = window.innerHeight / 2;
+    //perspectiveCamera.bottom = -window.innerHeight / 2;
+    //perspectiveCamera.updateProjectionMatrix();
     render();
 }
 
 function render() {
-    renderer.render( scene, camera );
+    renderer.render( scene, perspectiveCamera );
 }

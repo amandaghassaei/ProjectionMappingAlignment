@@ -33,14 +33,73 @@
     <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
     <input class="numInput" type="text">
     </div>
+    <div id="opacity">opacity
+    <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+    <input class="numInput" type="text">
+    </div>
+    <br/>
 
     <div id="rotation">rotation
+    <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+    <input class="numInput" type="text">
+    </div>
+    <div id="rotationX">rotation axis X pos
+    <input class="numInput" type="text">
+    </div>
+    <div id="rotationZ">rotation axis Z pos
+    <input class="numInput" type="text">
+    </div>
+    <br/>
+
+    <div id="scale">scale
     <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
     <input class="numInput" type="text">
     </div>
 
     lens (mm), fov (degrees), zoom(x), camera pos, look at pos, ortho/perspective, crosshairs, x/z rotation axis
 
+</div>
+<div id="cameraControls">
+
+    <input type="radio" name="radioName" value="perspective" /> Perspective
+    <input type="radio" name="radioName" value="ortho" /> Orthographic <br/><br/>
+
+    <div id="perspectiveControls">
+        Perspective Camera Controls<br/><br/>
+
+        <div id="fovPerspective">
+            <input class="numInput" type="text">
+            <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+            FOV (deg)
+        </div>
+
+        <div id="zoomPerspective">
+            <input class="numInput" type="text">
+            <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+            Zoom
+        </div>
+    </div>
+
+    <br/><br/>
+
+    <div id="orthoControls">
+        Ortho Camera Controls<br/><br/>
+
+
+        <div id="fovOrtho">
+            <input class="numInput" type="text">
+            <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+            FOV (deg)
+        </div>
+
+        <div id="zoomOrtho">
+            <input class="numInput" type="text">
+            <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+            Zoom
+        </div>
+    </div>
+
+    <br/>
 </div>
 
 </body>
