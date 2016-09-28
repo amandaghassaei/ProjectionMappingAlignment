@@ -4,6 +4,9 @@
 
 var container, perspectiveCamera, orthoCamera, scene, renderer, orthoControls, perspectiveControls;
 
+var vreffect;
+var vrcontrols;
+
 // Check for the various File API support.
 if (window.File && window.FileReader && window.FileList && window.Blob) {
   // Great success! All the File APIs are supported.
@@ -52,6 +55,25 @@ function init() {
     //orthoControls = new THREE.OrbitControls(orthoCamera, container);
     //orthoControls.addEventListener('change', render);
 
+    vrcontrols = new THREE.VRControls( perspectiveCamera );
+    vrcontrols.standing = true;
+
+    var controller1 = new THREE.ViveController( 0 );
+    controller1.standingMatrix = vrcontrols.getStandingMatrix();
+    scene.add( controller1 );
+
+    var controller2 = new THREE.ViveController( 1 );
+    controller2.standingMatrix = vrcontrols.getStandingMatrix();
+    scene.add( controller2 );
+
+    vreffect = new THREE.VREffect( renderer );
+
+    if ( WEBVR.isAvailable() === true ) {
+
+        document.body.appendChild( WEBVR.getButton( vreffect ) );
+
+    }
+
 
     window.addEventListener( 'resize', onWindowResize, false );
 
@@ -69,7 +91,9 @@ function init() {
 
     initControls(ambient, mesh);
 
-    render();
+    requestAnimationFrame(_render);
+
+    //render();
 }
 
 function handleFileSelectMaterials(evt) {
@@ -262,6 +286,12 @@ function onWindowResize() {
 }
 
 function render() {
-    if (isPerspective) renderer.render( scene, perspectiveCamera );
-    else renderer.render( scene, orthoCamera );
+
+}
+
+function _render(){
+    vrcontrols.update();
+    if (isPerspective) vreffect.render( scene, perspectiveCamera );
+    else vreffect.render( scene, orthoCamera );
+    requestAnimationFrame(_render);
 }
