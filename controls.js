@@ -43,10 +43,11 @@ function initControls(ambientLight){
         $("#rotationZero").html(rotationZero);
     });
     setSliderStopInput("#rotation", rotation, 0, 360, 0.01, function(val){
+        var oldRotation = rotation;
         rotation = val;
         if (mesh) {
             mesh.rotation.set(0,rotation*Math.PI/180,0);
-            var _rotation = rotation-rotationZero;
+            var _rotation = rotation-oldRotation-rotationZero;
             socket.emit('rotation', _rotation);
         }
         render();

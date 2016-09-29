@@ -1,2 +1,4 @@
 data/
 node/node_modules
+
+*.pyc

@@ -14,13 +14,16 @@ var PythonShell = require('python-shell');
 //var pyshell = new PythonShell('node/test.py', { mode: 'text '});
 //pyshell.send('message');
 
-
 io.on('connection', function(socket) {
 
     console.log("connected");
 
     socket.on('rotation', function (value) {
-        console.log(value);
+        console.log("sending " + value);
+        PythonShell.run('node/stepper_angles.py', {args: ["[[" + value + "]]"]}, function (err) {
+          if (err) throw err;
+          console.log("finished");
+        });
     });
 
 });

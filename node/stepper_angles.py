@@ -36,7 +36,7 @@ class virtualMachine(machines.virtualMachine):
 	
 	def initInterfaces(self):
 		if self.providedInterface: self.fabnet = self.providedInterface		#providedInterface is defined in the virtualMachine class.
-		else: self.fabnet = interfaces.gestaltInterface('FABNET', interfaces.serialInterface(baudRate = 115200, interfaceType = 'ftdi', portName = '/dev/ttyUSB0'))
+		else: self.fabnet = interfaces.gestaltInterface('FABNET', interfaces.serialInterface(baudRate = 115200, interfaceType = 'ftdi', portName = '/dev/tty.usbserial-FTXYJGOO'))
 		
 	def initControllers(self):
 		self.aAxisNode = nodes.networkedGestaltNode('A Axis', self.fabnet, filename = '086-005a.py', persistence = self.persistence)
