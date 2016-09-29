@@ -1,4 +1,7 @@
 data/
 node/node_modules
 
+motionPlannerDebugFile.txt
+virtualmachineids.vmp
+
 *.pyc
