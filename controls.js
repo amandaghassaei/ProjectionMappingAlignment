@@ -5,6 +5,7 @@
 var brightness = 255;
 var opacity = 1;
 var rotation = 0;
+var rotationZero = 0;
 var geoOffset = new THREE.Vector3(-0.462,0,-0.18);
 var scale = 1;
 
@@ -34,22 +35,25 @@ function initControls(ambientLight){
         render();
     });
 
-    setSliderInput("#rotation", rotation, 0, Math.PI*2, 0.01, function(val){
+
+    $("#rotationZero").html(rotationZero);
+    $("#setZero").click(function(e){
+        e.preventDefault();
+        rotationZero = rotation;
+        $("#rotationZero").html(rotationZero);
+    });
+    setSliderStopInput("#rotation", rotation, 0, 360, 0.01, function(val){
         rotation = val;
         if (mesh) {
-            mesh.rotation.set(0,rotation,0);
-            //send to socket
+            mesh.rotation.set(0,rotation*Math.PI/180,0);
+            var _rotation = rotation-rotationZero;
+            socket.emit('rotation', _rotation);
         }
         render();
     });
     setSliderInput("#rotationX", geoOffset.x, -1, 1, 0.01, function(val){
         geoOffset.x = val;
         if (mesh) {
-            //var size = mesh.children[0].geometry.boundingBox.max.clone().sub(mesh.children[0].geometry.boundingBox.min);
-            //var scalingFactor = size.x;
-            //if (size.y>scalingFactor) scalingFactor = size.y;
-            //if (size.z>scalingFactor) scalingFactor = size.z;
-            //scalingFactor = 1/scalingFactor;
             var scalingFactor = 0.09;
             mesh.children[0].position.x = mesh.children[0].geometry.boundingBox.max.x*scalingFactor*val;
         }
@@ -59,11 +63,6 @@ function initControls(ambientLight){
     setSliderInput("#rotationZ", geoOffset.z, -1, 1, 0.01, function(val){
         geoOffset.z = val;
         if (mesh) {
-            //var size = mesh.children[0].geometry.boundingBox.max.clone().sub(mesh.children[0].geometry.boundingBox.min);
-            //var scalingFactor = size.x;
-            //if (size.y>scalingFactor) scalingFactor = size.y;
-            //if (size.z>scalingFactor) scalingFactor = size.z;
-            //scalingFactor = 1/scalingFactor;
             var scalingFactor = 0.09;
             mesh.children[0].position.z = mesh.children[0].geometry.boundingBox.max.z*scalingFactor*val;
         }
@@ -165,34 +164,12 @@ function initControls(ambientLight){
     });
 
 
-
     $('#showCrosshairs').prop('checked', true);
     $('#showCrosshairs').change(function() {
         var $crosshairs = $("#crosshairs");
         if (this.checked) $crosshairs.show();
         else $crosshairs.hide();
     });
-
-
-
-
-    //document.addEventListener( 'mouseup', function(){
-    //
-    //    perspectiveCamera.fov = perspecitveFOV;
-    //    perspectiveCamera.zoom = perspectiveZoom;
-    //    orthoCamera.fov = orthoFOV;
-    //    orthoCamera.zoom = orthoZoom;
-    //    perspectiveCamera.updateProjectionMatrix();
-    //    orthoCamera.updateProjectionMatrix();
-    //    perspectiveCamera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z);
-    //    orthoCamera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z);
-    //    perspectiveCamera.lookAt(lookAt);
-    //    orthoCamera.lookAt(lookAt);
-    //    perspectiveCamera.updateProjectionMatrix();
-    //    orthoCamera.updateProjectionMatrix();
-    //
-    //    render();
-    //}, false );
 
 }
 
@@ -218,6 +195,33 @@ function setSliderInput(el, val, min, max, step, callback){
     var $input = $(el+">input");
     $input.val(val);
     slider.on("slide", function(){
+        var val  = slider.slider('value');
+        callback(val);
+        $input.val(val);
+    });
+    $input.change(function(){
+        var val = $input.val();
+        if (isNaN(val)){
+            console.warn("val in NaN");
+            return;
+        }
+        slider.slider('value', val);
+        callback(val);
+    });
+}
+
+function setSliderStopInput(el, val, min, max, step, callback){
+    var slider = $(el+">.flat-slider").slider({
+        orientation: 'horizontal',
+        range: false,
+        value: val,
+        min: min,
+        max: max,
+        step: step
+    });
+    var $input = $(el+">input");
+    $input.val(val);
+    slider.on("slidestop", function(){
         var val  = slider.slider('value');
         callback(val);
         $input.val(val);

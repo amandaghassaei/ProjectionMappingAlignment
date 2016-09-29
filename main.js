@@ -22,6 +22,8 @@ var mesh;
 var materials;//load from mtl
 var texture;//load from img
 
+var socket;
+
 var origin = new THREE.Mesh(new THREE.SphereGeometry(10), new THREE.MeshBasicMaterial({color:0xff0000}));
 
 
@@ -89,7 +91,13 @@ function init() {
         document.getElementById('files').click();
     });
 
+    socket = io('http://localhost:8080', {'forceNew':true});
+    socket.on('connect', function(data){
+        console.log("connected");
+    });
+
     initControls(ambient, mesh);
+
 
     requestAnimationFrame(_render);
 
