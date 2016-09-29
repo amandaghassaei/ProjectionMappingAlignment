@@ -8,8 +8,8 @@ var rotation = 0;
 var geoOffset = new THREE.Vector3(-0.462,0,-0.18);
 var scale = 1;
 
-var perspecitveFOV = 20;
-var perspectiveZoom = 1;
+var perspecitveFOV = 20.43;
+var perspectiveZoom = 1.051;
 
 var orthoFOV = 20;
 var orthoZoom = 1;
@@ -17,7 +17,7 @@ var orthoZoom = 1;
 var isPerspective = true;
 
 var cameraPosition = new THREE.Vector3(0,140,790);
-var lookAt = new THREE.Vector3(0,0,0);
+var lookAt = new THREE.Vector3(-3.3,103.4,0);
 
 function initControls(ambientLight){
 
@@ -36,7 +36,10 @@ function initControls(ambientLight){
 
     setSliderInput("#rotation", rotation, 0, Math.PI*2, 0.01, function(val){
         rotation = val;
-        if (mesh) mesh.rotation.set(0,rotation,0);
+        if (mesh) {
+            mesh.rotation.set(0,rotation,0);
+            //send to socket
+        }
         render();
     });
     setSliderInput("#rotationX", geoOffset.x, -1, 1, 0.01, function(val){
