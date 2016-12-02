@@ -4,13 +4,13 @@
 
 var brightness = 255;
 var opacity = 1;
-var rotation = 0;
+var rotation = 1;
 var rotationZero = 0;
 var geoOffset = new THREE.Vector3(-0.462,0,-0.18);
 var scale = 1;
 
 var perspecitveFOV = 20.43;
-var perspectiveZoom = 1.051;
+var perspectiveZoom = 1;
 
 var orthoFOV = 20;
 var orthoZoom = 1;
@@ -18,7 +18,7 @@ var orthoZoom = 1;
 var isPerspective = true;
 
 var cameraPosition = new THREE.Vector3(0,140,790);
-var lookAt = new THREE.Vector3(-3.3,103.4,0);
+var lookAt = new THREE.Vector3(-19.1,115.79,0);
 
 function initControls(ambientLight){
 
@@ -42,16 +42,21 @@ function initControls(ambientLight){
         rotationZero = rotation;
         $("#rotationZero").html(rotationZero);
     });
-    setSliderStopInput("#rotation", rotation, 0, 360, 0.01, function(val){
-        var oldRotation = rotation;
+    socket.on("dataIn", function(data){
+        var json = JSON.parse(data);
+        if (json.sr && json.sr.posx){
+            mesh.rotation.set(0,json.sr.posx,0);
+        }
+    });
+    setSliderInput("#rotation", rotation, 0, 2*Math.PI, 0.01, function(val){
         rotation = val;
         if (mesh) {
-            mesh.rotation.set(0,rotation*Math.PI/180,0);
-            var _rotation = rotation-oldRotation-rotationZero;
-            socket.emit('rotation', _rotation);
+            // mesh.rotation.set(0,rotation,0);
+            socket.emit('rotation', "g0 x" + rotation);
         }
         render();
     });
+
     setSliderInput("#rotationX", geoOffset.x, -1, 1, 0.01, function(val){
         geoOffset.x = val;
         if (mesh) {
@@ -239,6 +244,13 @@ function setSliderInput(el, val, min, max, step, callback){
         var val  = slider.slider('value');
         callback(val);
         $input.val(val);
+    });
+
+    slider.on("slide", function(){
+        var val  = slider.slider('value');
+        if (mesh) {
+            mesh.rotation.set(0, val * Math.PI / 180, 0);
+        }
     });
     $input.change(function(){
         var val = $input.val();

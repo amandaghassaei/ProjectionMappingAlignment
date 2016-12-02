@@ -1,5 +1,6 @@
 data/
 node/node_modules
+node_modules
 
 motionPlannerDebugFile.txt
 virtualmachineids.vmp
