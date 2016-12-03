@@ -175,6 +175,19 @@ function initWebcam(){
         antiOcclusionHeight = val;
     });
 
+    var occlusionMode = false;
+    $("#occlusionMode").click(function(e){
+        occlusionMode = !occlusionMode;
+        if (occlusionMode){
+            scene.background = new THREE.Color(0xff0000);
+            if (mesh) mesh.visible = false;
+        } else {
+            scene.background = new THREE.Color(0x000000);
+            if (mesh) mesh.visible = false;
+        }
+        render();
+    });
+
     $("#playPauseWebcam").click(function(e){
         e.preventDefault();
         if (play) pause();
