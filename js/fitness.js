@@ -98,17 +98,119 @@ function initFitness(){
         render();
     });
 
+    function groupRegions(segmentNum, img_u8){
+        var numIter = 0;
+        var solved = false;
+        while (solved == false){
+            numIter++;
+            var _solved = true;
+            for (var i=0;i<segmentNum.length;i++){
+                var val = segmentNum[i];
+                if (val<0) continue;
+                var neighbors = [];
+                if (i>0) {
+                    neighbors.push(segmentNum[i-1]);
+                    if (i>=img_u8.cols+1){
+                        neighbors.push(segmentNum[i-img_u8.cols-1]);
+                    }
+                    if (i>=img_u8.cols){
+                        neighbors.push(segmentNum[i-img_u8.cols]);
+                    }
+                    if (i>=img_u8.cols-1){
+                        neighbors.push(segmentNum[i-img_u8.cols+1]);
+                    }
+                }
+                if (i<segmentNum.length-1) {
+                    neighbors.push(segmentNum[i+1]);
+                    if (i<segmentNum.length-img_u8.cols-1){
+                        neighbors.push(segmentNum[i+img_u8.cols+1]);
+                    }
+                    if (i<segmentNum.length-img_u8.cols){
+                        neighbors.push(segmentNum[i+img_u8.cols]);
+                    }
+                    if (i<segmentNum.length-img_u8.cols+1){
+                        neighbors.push(segmentNum[i+img_u8.cols-1]);
+                    }
+                }
+                for (var k=neighbors.length-1;k>=0;k--){
+                    if (neighbors[k]<0) neighbors.splice(k, 1);
+                }
+                var min = Math.min.apply(null, neighbors);
+                if (min<val) {
+                    segmentNum[i] = min;
+                    _solved = false;
+                }
+            }
+            solved = _solved;
+            if (numIter>1000){
+                console.warn("exceeded 1000 iterations of segmentation");
+                solved = true;
+            }
+        }
+        var allSegments = [];
+        for (var i=0;i<segmentNum.length;i++){
+            var val = segmentNum[i];
+            if (val<0) continue;
+            if (allSegments.indexOf(val)<0) allSegments.push(val);
+        }
+        return allSegments;
+    }
+
+    function calcAreas(segmentNum, allSegments){
+        var allAreas = [];
+        for (var i=0;i<allSegments.length;i++){
+            allAreas.push(0);
+        }
+        for (var i=0;i<segmentNum.length;i++){
+            var val = segmentNum[i];
+            if (val < 0) continue;
+            var index = allSegments.indexOf(val);
+            allAreas[index] = allAreas[index]+1;
+        }
+        return allAreas;
+    }
 
     function calcFitness(){
         var img_u8 = webcam.getFrame();
-        //partition
+        var data = img_u8.data;
 
+        //segmentation
+        var segmentNum = new Int32Array(data.length);
+        for (var i=0;i<data.length;i++){
+            if (data[i]>0) {
+                segmentNum[i] = i;
+            } else {
+                segmentNum[i] = -1;
+            }
+        }
+        var allSegments = groupRegions(segmentNum, img_u8);
 
-        //check for closed loop
+        //get segment areas
+        var allAreas = calcAreas(segmentNum, allSegments);
 
+        //find largest partition by area
+        var max = Math.max.apply(null, allAreas);
+        var loopIndex = allAreas.indexOf(max);
+        var segment = allSegments[loopIndex];
+
+        //check for closed loop (two distinct non-segment regions)
+        for (var i=0;i<segmentNum.length;i++){
+            var val = segmentNum[i];
+            if (val == segment) segmentNum[i] = -1;//set all white regions in segment to -1
+            else segmentNum[i] = i;
+        }
+        var allSegments = groupRegions(segmentNum, img_u8);
+        if (allSegments.length == 1) return -1;//no loop
+        allAreas = calcAreas(segmentNum, allSegments);
+
+        max = Math.max.apply(null, allAreas);
+        var maxIndex = allAreas.indexOf(max);
+        allAreas.splice(maxIndex, 1);//this is the outer region
+        max = Math.max.apply(null, allAreas);
+        console.log(max);
+        if (max < 3000) return -1;//too small
 
         return outlineOffset;
-        return -1;
     }
 
     return {
