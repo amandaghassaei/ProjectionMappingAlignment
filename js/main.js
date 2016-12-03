@@ -2,10 +2,7 @@
  * Created by ghassaei on 4/13/16.
  */
 
-var container, perspectiveCamera, orthoCamera, scene, renderer, orthoControls, perspectiveControls;
-
-var vreffect;
-var vrcontrols;
+var container, perspectiveCamera, orthoCamera, scene, outlineScene1, outlineScene2, renderer, orthoControls, perspectiveControls;
 
 // Check for the various File API support.
 if (window.File && window.FileReader && window.FileList && window.Blob) {
@@ -25,7 +22,7 @@ var texture;//load from img
 var socket;
 
 var origin = new THREE.Mesh(new THREE.SphereGeometry(10), new THREE.MeshBasicMaterial({color:0xff0000}));
-
+var fitness = initFitness();
 
 function init() {
     container = document.getElementById('three');
@@ -39,6 +36,8 @@ function init() {
 
     // scene
     scene = new THREE.Scene();
+    outlineScene1 = new THREE.Scene();
+    outlineScene2 = new THREE.Scene();
     var ambient = new THREE.AmbientLight(0xffffff);
     ambient.intensity = 1;
     scene.add( ambient );
@@ -50,6 +49,7 @@ function init() {
     renderer = new THREE.WebGLRenderer();
     renderer.setPixelRatio( window.devicePixelRatio );
     renderer.setSize( window.innerWidth, window.innerHeight );
+    renderer.autoClear = false;
     container.appendChild( renderer.domElement );
 
     //perspectiveControls = new THREE.OrbitControls(perspectiveCamera, container);
@@ -67,14 +67,6 @@ function init() {
     var controller2 = new THREE.ViveController( 1 );
     controller2.standingMatrix = vrcontrols.getStandingMatrix();
     scene.add( controller2 );
-
-    vreffect = new THREE.VREffect( renderer );
-
-    if ( WEBVR.isAvailable() === true ) {
-
-        document.body.appendChild( WEBVR.getButton( vreffect ) );
-
-    }
 
 
     window.addEventListener( 'resize', onWindowResize, false );
@@ -98,8 +90,6 @@ function init() {
 
     initControls(ambient, mesh);
 
-
-    requestAnimationFrame(_render);
 
     //render();
 }
@@ -292,6 +282,8 @@ function loadOBJ(url){
         mesh.position.set(0,0,0);
         mesh.rotation.set(0,rotation*Math.PI/180,0);
 
+        fitness.setMesh(mesh);
+
         updateIMGTexture();
         scene.add( object );
         render();
@@ -315,12 +307,16 @@ function onWindowResize() {
 }
 
 function render() {
-
+    fitness.sync();
+    renderer.clear();
+    _render(outlineScene1);
+    renderer.clearDepth();
+    _render(outlineScene2);
+    renderer.clearDepth();
+    _render(scene);
 }
 
-function _render(){
-    vrcontrols.update();
-    if (isPerspective) vreffect.render( scene, perspectiveCamera );
-    else vreffect.render( scene, orthoCamera );
-    requestAnimationFrame(_render);
+function _render(_scene){
+    if (isPerspective) renderer.render(_scene, perspectiveCamera);
+    else renderer.render(_scene, orthoCamera );
 }
