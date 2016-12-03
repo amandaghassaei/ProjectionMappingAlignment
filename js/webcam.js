@@ -5,6 +5,19 @@
 
 function initWebcam(){
 
+    var play = true;
+
+    function pause(){
+        play = false;
+    }
+    function start(){
+        if (play == true) return;
+        play = true;
+        compatibility.requestAnimationFrame(tick);
+    }
+
+    var redThreshold = 100;
+
     // lets do some fun
     var video = document.getElementById('webcam');
     var canvas = document.getElementById('canvas');
@@ -69,12 +82,13 @@ function initWebcam(){
     }
 
     function tick() {
+        if (!play) return;
         compatibility.requestAnimationFrame(tick);
         if (video.readyState === video.HAVE_ENOUGH_DATA) {
             ctx.drawImage(video, 0, 0, 320, 240);
             var imageData = ctx.getImageData(0, 0, 320, 240);
 
-            jsfeat.imgproc.grayscale(imageData.data, 320, 240, img_u8);
+            redChannel(imageData.data, 320, 240, img_u8);
 
             // render result back to canvas
             var data_u32 = new Uint32Array(imageData.data.buffer);
@@ -90,8 +104,46 @@ function initWebcam(){
         }
     }
 
-    // $(window).unload(function() {
-    //     video.pause();
-    //     video.src=null;
-    // });
+    function redChannel(src, w, h, dst, code) {
+        // this is default image data representation in browser
+        if (typeof code === "undefined") { code = jsfeat.COLOR_RGBA2GRAY; }
+        var x=0, y=0, i=0, j=0, ir=0,jr=0;
+        var coeff_r = 4899, coeff_g = 9617, coeff_b = 1868, cn = 4;
+
+        var cn2 = cn<<1, cn3 = (cn*3)|0;
+
+        dst.resize(w, h, 1);
+        var dst_u8 = dst.data;
+
+        var thresh = redThreshold;
+
+        for(y = 0; y < h; ++y, j+=w, i+=w*cn) {
+            for(x = 0, ir = i, jr = j; x <= w-4; x+=4, ir+=cn<<2, jr+=4) {
+                dst_u8[jr]     = src[ir] > thresh ? 255 : 0;
+                dst_u8[jr + 1] = src[ir+cn] > thresh ? 255 : 0;
+                dst_u8[jr + 2] = src[ir+cn2] > thresh ? 255 : 0;
+                dst_u8[jr + 3] = src[ir+cn3] > thresh ? 255 : 0;
+            }
+            for (; x < w; ++x, ++jr, ir+=cn) {
+                dst_u8[jr] = src[ir] > thresh ? src[ir] : 0;
+            }
+        }
+    }
+
+    $(window).on('beforeunload ',function() {
+        video.pause();
+        video.src=null;
+    });
+
+    setSliderInput("#redThreshold", redThreshold, 0, 255, 1, function(val){
+        redThreshold = val;
+    });
+
+    $("#playPauseWebcam").click(function(e){
+        e.preventDefault();
+        if (play) pause();
+        else start();
+    });
+
+
 }
