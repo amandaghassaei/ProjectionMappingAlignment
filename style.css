@@ -14,7 +14,7 @@ a{
 }
 
 #controls{
-    width: 300px;
+    width: 360px;
     height: 100%;
     padding: 20px;
     position: absolute;
@@ -23,10 +23,11 @@ a{
     right: 0;
     background: rgba(255,255,255,0.0);
     text-align: right;
+    overflow: auto;
 }
 
 #cameraControls{
-    width: 300px;
+    width: 320px;
     height: 100%;
     padding: 20px;
     position: absolute;
@@ -35,6 +36,7 @@ a{
     left: 0;
     background: rgba(0,0,0,0.0);
     text-align: left;
+    overflow: auto;
 }
 
 #crosshairs{
@@ -136,4 +138,18 @@ input.numInput{
     position: relative;
     margin: 10px;
     /*padding: 4px 0;*/
+}
+
+.extraSpace{
+    height:40px;
+    width: 100%;
+}
+
+.flipped
+{
+    direction: rtl;
+}
+.flipped>div
+{
+    direction: ltr;
 }

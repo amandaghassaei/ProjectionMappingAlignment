@@ -11,6 +11,8 @@ function initFitness(){
     var outlineWidth = 10;
     var outlineOffset = 10;
 
+    var $camera = $("#cameraInput");
+
 
     var vertexShader =
         "uniform float offset;" +
@@ -21,7 +23,7 @@ function initFitness(){
 
     var fragmentShaderColor =
         "void main(){"+
-            "gl_FragColor = vec4( 1.0, 1.0, 0.0, 1.0 );"+
+            "gl_FragColor = vec4( 1.0, 0.0, 0.0, 1.0 );"+
         "}\n";
     var fragmentShaderBlack =
         "void main(){"+
@@ -89,6 +91,15 @@ function initFitness(){
         shadowMaterial.uniforms.offset.needsUpdate = true;
         render();
     });
+
+    $('#showOutline').prop('checked', true);
+    $('#showOutline').change(function() {
+        outlineMaterial.visible = this.checked;
+        shadowMaterial.visible = this.checked;
+        render();
+    });
+
+
 
     return {
         setMesh: setMesh,

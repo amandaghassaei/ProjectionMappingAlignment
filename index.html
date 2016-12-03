@@ -23,8 +23,13 @@
 
     <script src="dependencies/socket.io-1.3.5.js"></script>
 
+    <script src="dependencies/jsfeat.js"></script>
+    <script src="dependencies/compatibility.js"></script>
+
+
     <script src="js/controls.js"></script>
     <script src="js/fitness.js"></script>
+    <script src="js/webcam.js"></script>
 
     <script src="js/main.js"></script>
 </head>
@@ -74,7 +79,7 @@
     </div>
 
     <br/><br/>
-    outline:
+    Outline:
     <div id="outlineOffset">offset
     <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
     <input class="numInput" type="text">
@@ -83,86 +88,99 @@
     <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
     <input class="numInput" type="text">
     </div>
+    <br/>
+    <input type="checkbox" id="showOutline"/>&nbsp; Show Outline
 
+    <br/><br/>
+
+    <video id="webcam" width="320" height="240" style="display:none;" src="blob:http://127.0.0.1:8000/"></video>
+    <div id="cameraInput">
+        <canvas id="canvas" width="320" height="240"></canvas>
+    </div>
+
+    <div class="extraSpace"></div>
 
 </div>
-<div id="cameraControls">
+<div id="cameraControls" class="flipped">
 
-    <input type="radio" name="radioName" value="perspective" /> Perspective
-    <input type="radio" name="radioName" value="ortho" /> Orthographic <br/><br/>
+    <div>
 
-    <div id="perspectiveControls">
-        Perspective Camera Controls<br/><br/>
+        <input type="radio" name="radioName" value="perspective" /> Perspective
+        <input type="radio" name="radioName" value="ortho" /> Orthographic <br/><br/>
 
-        <div id="fovPerspective">
-            <input class="numInput" type="text">
-            <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
-            FOV (deg)
+        <div id="perspectiveControls">
+            Perspective Camera Controls<br/><br/>
+
+            <div id="fovPerspective">
+                <input class="numInput" type="text">
+                <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+                FOV (deg)
+            </div>
+
+            <div id="zoomPerspective">
+                <input class="numInput" type="text">
+                <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+                Zoom
+            </div>
         </div>
 
-        <div id="zoomPerspective">
-            <input class="numInput" type="text">
-            <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
-            Zoom
+        <br/><br/>
+
+        <div id="orthoControls">
+            Ortho Camera Controls<br/><br/>
+
+
+            <div id="fovOrtho">
+                <input class="numInput" type="text">
+                <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+                FOV (deg)
+            </div>
+
+            <div id="zoomOrtho">
+                <input class="numInput" type="text">
+                <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+                Zoom
+            </div>
         </div>
-    </div>
 
-    <br/><br/>
+        <br/><br/>
 
-    <div id="orthoControls">
-        Ortho Camera Controls<br/><br/>
-
-
-        <div id="fovOrtho">
-            <input class="numInput" type="text">
+        Camera Pos (XYZ)<br/>
+        <div id="cameraX">
+            X
             <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
-            FOV (deg)
-        </div>
-
-        <div id="zoomOrtho">
             <input class="numInput" type="text">
-            <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
-            Zoom
         </div>
-    </div>
-
-    <br/><br/>
-
-    Camera Pos (XYZ)<br/>
-    <div id="cameraX">
-        X
-        <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
-        <input class="numInput" type="text">
-    </div>
-    <div id="cameraY">
-        Y
-        <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
-        <input class="numInput" type="text">
-    </div>
-    <div id="cameraZ">
-        Z
-        <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
-        <input class="numInput" type="text">
-    </div><br/><br/>
+        <div id="cameraY">
+            Y
+            <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+            <input class="numInput" type="text">
+        </div>
+        <div id="cameraZ">
+            Z
+            <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+            <input class="numInput" type="text">
+        </div><br/><br/>
 
 
-    <div id="lookAtX">
-        Look At X
-        <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
-        <input class="numInput" type="text">
-    </div>
-    <div id="lookAtY">
-        Look At Y
-        <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
-        <input class="numInput" type="text">
-    </div>
-    <div id="lookAtZ">
-        Look At Z &nbsp;<input class="numInput" type="text">
-    </div>
-    <br/>
-    <input type="checkbox" id="showCrosshairs"/>&nbsp; Show Crosshairs
+        <div id="lookAtX">
+            Look At X
+            <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+            <input class="numInput" type="text">
+        </div>
+        <div id="lookAtY">
+            Look At Y
+            <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
+            <input class="numInput" type="text">
+        </div>
+        <div id="lookAtZ">
+            Look At Z &nbsp;<input class="numInput" type="text">
+        </div>
+        <br/>
+        <input type="checkbox" id="showCrosshairs"/>&nbsp; Show Crosshairs
 
-
+        <div class="extraSpace"></div>
+    </div>
 </div>
 <img id="crosshairs" src="crosshairs.png">
 
