@@ -177,6 +177,12 @@ function initControls(ambientLight){
         else $crosshairs.hide();
     });
 
+    $('#showGeoOrigin').prop('checked', true);
+    $('#showGeoOrigin').change(function() {
+        origin.visible = this.checked;
+        render();
+    });
+
 }
 
 function changeCamera(){
@@ -244,13 +250,6 @@ function setSliderInput(el, val, min, max, step, callback){
         var val  = slider.slider('value');
         callback(val);
         $input.val(val);
-    });
-
-    slider.on("slide", function(){
-        var val  = slider.slider('value');
-        if (mesh) {
-            mesh.rotation.set(0, val * Math.PI / 180, 0);
-        }
     });
     $input.change(function(){
         var val = $input.val();

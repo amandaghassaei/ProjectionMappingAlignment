@@ -8,7 +8,8 @@ function initFitness(){
     var fitnessMesh;
     var shadowMesh;
 
-    var lineWidth = 10;
+    var outlineWidth = 10;
+    var outlineOffset = 10;
 
 
     var vertexShader =
@@ -29,14 +30,14 @@ function initFitness(){
 
     var outlineMaterial = new THREE.ShaderMaterial({
         uniforms: {
-            offset: {type: 'f', value: 20.0}
+            offset: {type: 'f', value: outlineOffset+outlineWidth}
         },
         vertexShader: vertexShader,
         fragmentShader: fragmentShaderColor
     });
     var shadowMaterial = new THREE.ShaderMaterial({
         uniforms: {
-            offset: {type: 'f', value: 10.0}
+            offset: {type: 'f', value: outlineOffset}
         },
         vertexShader: vertexShader,
         fragmentShader: fragmentShaderBlack
@@ -73,6 +74,21 @@ function initFitness(){
         shadowMesh.rotation.set(_mesh.rotation.x, _mesh.rotation.y, _mesh.rotation.z);
 
     }
+
+    setSliderInput("#outlineWidth", outlineWidth, 0, 20, 0.01, function(val){
+        outlineWidth = val;
+        outlineMaterial.uniforms.offset.value = outlineOffset + outlineWidth;
+        outlineMaterial.uniforms.offset.needsUpdate = true;
+        render();
+    });
+    setSliderInput("#outlineOffset", outlineOffset, 0, 100, 0.1, function(val){
+        outlineOffset = val;
+        outlineMaterial.uniforms.offset.value = outlineOffset + outlineWidth;
+        outlineMaterial.uniforms.offset.needsUpdate = true;
+        shadowMaterial.uniforms.offset.value = outlineOffset;
+        shadowMaterial.uniforms.offset.needsUpdate = true;
+        render();
+    });
 
     return {
         setMesh: setMesh,

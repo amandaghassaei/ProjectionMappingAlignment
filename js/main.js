@@ -22,7 +22,7 @@ var texture;//load from img
 var socket;
 
 var origin = new THREE.Mesh(new THREE.SphereGeometry(10), new THREE.MeshBasicMaterial({color:0xff0000}));
-var fitness = initFitness();
+var fitness
 
 function init() {
     container = document.getElementById('three');
@@ -57,18 +57,6 @@ function init() {
     //orthoControls = new THREE.OrbitControls(orthoCamera, container);
     //orthoControls.addEventListener('change', render);
 
-    vrcontrols = new THREE.VRControls( perspectiveCamera );
-    vrcontrols.standing = true;
-
-    var controller1 = new THREE.ViveController( 0 );
-    controller1.standingMatrix = vrcontrols.getStandingMatrix();
-    scene.add( controller1 );
-
-    var controller2 = new THREE.ViveController( 1 );
-    controller2.standingMatrix = vrcontrols.getStandingMatrix();
-    scene.add( controller2 );
-
-
     window.addEventListener( 'resize', onWindowResize, false );
 
     //events for loading files
@@ -89,7 +77,7 @@ function init() {
     });
 
     initControls(ambient, mesh);
-
+    fitness = initFitness();
 
     //render();
 }
