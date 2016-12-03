@@ -16,7 +16,7 @@ function initWebcam(){
         compatibility.requestAnimationFrame(tick);
     }
 
-    var redThreshold = 100;
+    var redThreshold = 200;
 
     // lets do some fun
     var video = document.getElementById('webcam');

@@ -20,7 +20,47 @@ var isPerspective = true;
 var cameraPosition = new THREE.Vector3(0,140,790);
 var lookAt = new THREE.Vector3(-19.1,115.79,0);
 
+var sliderInputs = [];
+
 function initControls(ambientLight){
+
+    window.addEventListener("keyup", function(e){
+        // console.log(e.keyCode);
+        if (e.keyCode == 72){//h
+            if (optimizer.isRunning()) optimizer.pause();
+            if ($("#controls").is(":visible")) {
+                $("#controls").fadeOut();
+                $("#cameraControls").fadeOut();
+            }
+            else {
+                $("#controls").fadeIn();
+                $("#cameraControls").fadeIn();
+            }
+        } else if (e.keyCode == 70){
+            toggleFullScreen();
+        }
+    }, true);
+
+    function toggleFullScreen() {
+      if ((document.fullScreenElement && document.fullScreenElement !== null) ||    // alternative standard method
+          (!document.mozFullScreen && !document.webkitIsFullScreen)) {               // current working methods
+        if (document.documentElement.requestFullScreen) {
+          document.documentElement.requestFullScreen();
+        } else if (document.documentElement.mozRequestFullScreen) {
+          document.documentElement.mozRequestFullScreen();
+        } else if (document.documentElement.webkitRequestFullScreen) {
+          document.documentElement.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+        }
+      } else {
+        if (document.cancelFullScreen) {
+          document.cancelFullScreen();
+        } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen();
+        } else if (document.webkitCancelFullScreen) {
+          document.webkitCancelFullScreen();
+        }
+      }
+    }
 
     setSliderInput("#brightness", brightness, 0, 255, 1, function(val){
         brightness = val;
@@ -245,6 +285,11 @@ function setSliderInput(el, val, min, max, step, callback){
         step: step
     });
     var $input = $(el+">input");
+    sliderInputs[el] = function(_manualVal){
+        $input.val(_manualVal);
+        slider.slider('value', _manualVal);
+        callback(_manualVal);
+    };
     $input.val(val);
     slider.on("slide", function(){
         var val  = slider.slider('value');
@@ -260,6 +305,7 @@ function setSliderInput(el, val, min, max, step, callback){
         slider.slider('value', val);
         callback(val);
     });
+    return slider;
 }
 
 function setSliderStopInput(el, val, min, max, step, callback){

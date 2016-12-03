@@ -22,7 +22,8 @@ var texture;//load from img
 var socket;
 
 var origin = new THREE.Mesh(new THREE.SphereGeometry(10), new THREE.MeshBasicMaterial({color:0x00ff00}));
-var fitness
+var fitness;
+var optimizer;
 
 function init() {
     container = document.getElementById('three');
@@ -79,6 +80,7 @@ function init() {
     initControls(ambient, mesh);
     initWebcam();
     fitness = initFitness();
+    optimizer = initOptimizer(fitness);
 
     //render();
 }

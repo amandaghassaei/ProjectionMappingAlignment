@@ -11,8 +11,6 @@ function initFitness(){
     var outlineWidth = 10;
     var outlineOffset = 10;
 
-    var $camera = $("#cameraInput");
-
 
     var vertexShader =
         "uniform float offset;" +
@@ -66,6 +64,7 @@ function initFitness(){
     }
 
     function sync(){
+        if (!fitnessMesh) return;
         fitnessMesh.position.set(_mesh.position.x, _mesh.position.y, _mesh.position.z);
         fitnessMesh.children[0].position.set(_mesh.children[0].position.x, _mesh.children[0].position.y, _mesh.children[0].position.z);
         fitnessMesh.scale.set(_mesh.scale.x, _mesh.scale.y, _mesh.scale.z);
@@ -100,9 +99,13 @@ function initFitness(){
     });
 
 
+    function calcFitness(){
+        return 10;
+    }
 
     return {
         setMesh: setMesh,
-        sync: sync
+        sync: sync,
+        calcFitness: calcFitness
     }
 }
