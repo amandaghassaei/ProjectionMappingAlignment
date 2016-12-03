@@ -143,6 +143,7 @@ function initFitness(){
             }
             solved = _solved;
             if (numIter>1000){
+                showWarn("exceeded 1000 iterations of segmentation");
                 console.warn("exceeded 1000 iterations of segmentation");
                 solved = true;
             }

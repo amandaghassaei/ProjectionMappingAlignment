@@ -225,6 +225,10 @@ function initControls(ambientLight){
 
 }
 
+function showWarn(text){
+    $("#warning>div").html(text);
+}
+
 function changeCamera(){
     if (isPerspective){
         $("#orthoControls").css("opacity","0.4");
@@ -299,7 +303,8 @@ function setSliderInput(el, val, min, max, step, callback){
     $input.change(function(){
         var val = $input.val();
         if (isNaN(val)){
-            console.warn("val in NaN");
+            showWarn("val is NaN");
+            console.warn("val is NaN");
             return;
         }
         slider.slider('value', val);
@@ -327,7 +332,8 @@ function setSliderStopInput(el, val, min, max, step, callback){
     $input.change(function(){
         var val = $input.val();
         if (isNaN(val)){
-            console.warn("val in NaN");
+            showWarn("val is NaN");
+            console.warn("val is NaN");
             return;
         }
         slider.slider('value', val);
@@ -341,7 +347,8 @@ function setInput(el, val, callback){
     $input.change(function(){
         var val = parseFloat($input.val());
         if (isNaN(val)){
-            console.warn("val in NaN");
+            showWarn("val is NaN");
+            console.warn("val is NaN");
             return;
         }
         callback(val);

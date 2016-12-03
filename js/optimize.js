@@ -28,6 +28,12 @@ function initOptimizer(fitness){
         $("#cameraControls").hide();
 
         initialFitness = fitness.calcFitness();
+        if (initialFitness == -1) {
+            showWarn("bad initial fitness");
+            console.warn("bad initial fitness");
+            pause();
+            return;
+        }
         sliderInputs['#outlineOffset'](50);
         // sliderInputs['#outlineWidth'](10);
 
@@ -37,6 +43,7 @@ function initOptimizer(fitness){
 
     function pause(){
         running = false;
+        webcam.start();
         $("#controls").show();
         $("#cameraControls").show();
         if (mesh) mesh.visible = true;

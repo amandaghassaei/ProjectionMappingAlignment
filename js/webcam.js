@@ -125,7 +125,10 @@ function initWebcam(){
             ctx.putImageData(imageData, 0, 0);
 
             if (forEval) return img_u8;
-        } else if (forEval) console.warn("video not ready");
+        } else if (forEval) {
+            showWarn("video not ready");
+            console.warn("video not ready");
+        }
     }
 
     function redChannel(src, w, h, dst, code) {
