@@ -182,8 +182,9 @@ function initWebcam(){
             scene.background = new THREE.Color(0xff0000);
             if (mesh) mesh.visible = false;
         } else {
-            scene.background = new THREE.Color(0x000000);
-            if (mesh) mesh.visible = false;
+            outlineScene1.background = new THREE.Color(0x000000);
+            scene.background = null;
+            if (mesh) mesh.visible = true;
         }
         render();
     });

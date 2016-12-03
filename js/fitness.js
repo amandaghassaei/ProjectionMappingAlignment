@@ -101,8 +101,14 @@ function initFitness(){
 
     function calcFitness(){
         var img_u8 = webcam.getFrame();
+        //partition
 
-        return 10;
+
+        //check for closed loop
+
+
+        return outlineOffset;
+        return -1;
     }
 
     return {
