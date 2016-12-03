@@ -70,7 +70,7 @@ function initControls(ambientLight){
         render();
     });
 
-    setSliderInput("#scale", scale, 0.0001, 10, 0.01, function(val){
+    setLogSliderInput("#scale", scale, 0.0001, 10, 0.01, function(val){
         scale = val;
         if (mesh) mesh.scale.set(scale,scale,scale);
         render();
@@ -182,6 +182,46 @@ function changeCamera(){
         $("#perspectiveControls").css("opacity","0.4");
         $("#orthoControls").css("opacity","1");
     }
+}
+
+function setLogSliderInput(id, val, min, max, incr, callback){
+
+    var _scale = (Math.log(max)-Math.log(min)) / (max-min);
+
+    var slider = $(id+">div").slider({
+        orientation: 'horizontal',
+        range: false,
+        value: (Math.log(val)-Math.log(min)) / _scale + min,
+        min: min,
+        max: max,
+        step: incr
+    });
+
+    var $input = $(id+">input");
+    $input.change(function(){
+        var val = $input.val();
+        if ($input.hasClass("int")){
+            if (isNaN(parseInt(val))) return;
+            val = parseInt(val);
+        } else {
+            if (isNaN(parseFloat(val))) return;
+            val = parseFloat(val);
+        }
+
+        var min = slider.slider("option", "min");
+        if (val < min) val = min;
+        if (val > max) val = max;
+        $input.val(val);
+        slider.slider('value', (Math.log(val)-Math.log(min)) / _scale + min);
+        callback(val, id);
+    });
+    $input.val(val);
+    slider.on("slide", function(e, ui){
+        var val = ui.value;
+        val = Math.exp(Math.log(min) + _scale*(val-min));
+        $input.val(val.toFixed(4));
+        callback(val, id);
+    });
 }
 
 function setSliderInput(el, val, min, max, step, callback){
