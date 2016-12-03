@@ -100,6 +100,8 @@ function initFitness(){
 
 
     function calcFitness(){
+        var img_u8 = webcam.getFrame();
+
         return 10;
     }
 

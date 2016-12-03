@@ -12,6 +12,8 @@ function initOptimizer(fitness){
 
     function optimize(param, callback){
 
+        webcam.pause();
+
         if (!mesh) return;
         mesh.visible = false;
         originVis = origin.visible;

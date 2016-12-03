@@ -24,6 +24,7 @@ var socket;
 var origin = new THREE.Mesh(new THREE.SphereGeometry(10), new THREE.MeshBasicMaterial({color:0x00ff00}));
 var fitness;
 var optimizer;
+var webcam;
 
 function init() {
     container = document.getElementById('three');
@@ -78,7 +79,7 @@ function init() {
     });
 
     initControls(ambient, mesh);
-    initWebcam();
+    webcam = initWebcam();
     fitness = initFitness();
     optimizer = initOptimizer(fitness);
 

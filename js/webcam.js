@@ -17,8 +17,11 @@ function initWebcam(){
     }
 
     var redThreshold = 200;
+    var antiOcclusionX = 160;
+    var antiOcclusionY = 200;
+    var antiOcclusionWidth = 100;
+    var antiOcclusionHeight = 20;
 
-    // lets do some fun
     var video = document.getElementById('webcam');
     var canvas = document.getElementById('canvas');
     try {
@@ -84,24 +87,45 @@ function initWebcam(){
     function tick() {
         if (!play) return;
         compatibility.requestAnimationFrame(tick);
+        _getFrame();
+    }
+
+    function getFrame(){
+        return _getFrame(true);
+    }
+
+    function _getFrame(forEval){
         if (video.readyState === video.HAVE_ENOUGH_DATA) {
             ctx.drawImage(video, 0, 0, 320, 240);
             var imageData = ctx.getImageData(0, 0, 320, 240);
 
             redChannel(imageData.data, 320, 240, img_u8);
 
+            //add anti-occlusion
+            var halfWidth = Math.floor(antiOcclusionWidth/2);
+            var halfHeight = Math.floor(antiOcclusionHeight/2);
+            for (var y=antiOcclusionY-halfHeight;y<antiOcclusionY+halfHeight;y++){
+                for (var x=antiOcclusionX-halfWidth;x<antiOcclusionX+halfWidth;x++){
+                    var index = img_u8.cols*y + x;
+                    if (x<0 || y<0 || x>=img_u8.cols || y>=img_u8.rows) continue;
+                    if (img_u8.data[index]>0) continue;
+                    img_u8.data[index] = 100;
+                }
+            }
+
             // render result back to canvas
             var data_u32 = new Uint32Array(imageData.data.buffer);
             var alpha = (0xff << 24);
-            var i = img_u8.cols*img_u8.rows, pix = 0;
-            while(--i >= 0) {
+            var i = img_u8.cols * img_u8.rows, pix = 0;
+            while (--i >= 0) {
                 pix = img_u8.data[i];
                 data_u32[i] = alpha | (pix << 16) | (pix << 8) | pix;
             }
 
             ctx.putImageData(imageData, 0, 0);
 
-        }
+            if (forEval) return img_u8;
+        } else if (forEval) console.warn("video not ready");
     }
 
     function redChannel(src, w, h, dst, code) {
@@ -138,6 +162,18 @@ function initWebcam(){
     setSliderInput("#redThreshold", redThreshold, 0, 255, 1, function(val){
         redThreshold = val;
     });
+    setSliderInput("#antiOcclusionX", antiOcclusionX, 0, 319, 1, function(val){
+        antiOcclusionX = val;
+    });
+    setSliderInput("#antiOcclusionY", antiOcclusionY, 0, 239, 1, function(val){
+        antiOcclusionY = val;
+    });
+    setSliderInput("#antiOcclusionWidth", antiOcclusionWidth, 0, 320, 1, function(val){
+        antiOcclusionWidth = val;
+    });
+    setSliderInput("#antiOcclusionHeight", antiOcclusionHeight, 0, 240, 1, function(val){
+        antiOcclusionHeight = val;
+    });
 
     $("#playPauseWebcam").click(function(e){
         e.preventDefault();
@@ -145,5 +181,10 @@ function initWebcam(){
         else start();
     });
 
+    return {
+        getFrame: getFrame,
+        pause: pause,
+        start: start
+    }
 
 }
