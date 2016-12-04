@@ -87,6 +87,7 @@ function initOptimizer(fitness){
             var key = "#" + params[i];
             sliderInputs[key](currentValues[key] + vector[i]);
         }
+        sliderInputs['#outlineOffset'](0);
 
         window.requestAnimationFrame(function() {
             evaluate(function (newFitness, newOffset) {
