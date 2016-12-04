@@ -22,10 +22,14 @@ function initOptimizer(fitness){
         $("#crosshairs").hide();
         render();
 
-        running = true;
-
         // $("#controls").hide();
         $("#cameraControls").hide();
+        $("#warning").hide();
+
+        running = true;
+
+        //wait for render();
+
 
         initialFitness = fitness.calcFitness();
         if (initialFitness == -1) {
@@ -36,7 +40,6 @@ function initOptimizer(fitness){
         }
         sliderInputs['#outlineOffset'](50);
         // sliderInputs['#outlineWidth'](10);
-
 
 
     }

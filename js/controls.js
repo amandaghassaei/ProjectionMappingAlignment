@@ -75,17 +75,17 @@ function initControls(ambientLight){
         render();
     });
 
-
-    $("#rotationZero").html(rotationZero);
-    $("#setZero").click(function(e){
-        e.preventDefault();
-        rotationZero = rotation;
-        $("#rotationZero").html(rotationZero);
+    setSliderInput("#rotationZero", rotationZero, 0, 2*Math.PI, 0.01, function(val){
+        rotationZero = val;
+        mesh.rotation.set(0,rotationZero + rotation,0);
+        render();
     });
+
     socket.on("dataIn", function(data){
         var json = JSON.parse(data);
         if (json.sr && json.sr.posx){
-            mesh.rotation.set(0,json.sr.posx,0);
+            mesh.rotation.set(0,rotationZero + json.sr.posx,0);
+            render();
         }
     });
     setSliderInput("#rotation", rotation, 0, 2*Math.PI, 0.01, function(val){
@@ -226,6 +226,7 @@ function initControls(ambientLight){
 }
 
 function showWarn(text){
+    $("#warning").show();
     $("#warning>div").html(text);
 }
 

@@ -166,3 +166,7 @@ input.numInput{
 {
     direction: ltr;
 }
+
+.optimize{
+    text-decoration: none;
+}

@@ -190,8 +190,8 @@ function initFitness(){
         var allAreas = calcAreas(segmentNum, allSegments);
 
         //find largest partition by area
-        var max = Math.max.apply(null, allAreas);
-        var loopIndex = allAreas.indexOf(max);
+        var maxSegment = Math.max.apply(null, allAreas);
+        var loopIndex = allAreas.indexOf(maxSegment);
         var segment = allSegments[loopIndex];
 
         //check for closed loop (two distinct non-segment regions)
@@ -200,18 +200,17 @@ function initFitness(){
             if (val == segment) segmentNum[i] = -1;//set all white regions in segment to -1
             else segmentNum[i] = i;
         }
-        var allSegments = groupRegions(segmentNum, img_u8);
+        allSegments = groupRegions(segmentNum, img_u8);
         if (allSegments.length == 1) return -1;//no loop
         allAreas = calcAreas(segmentNum, allSegments);
 
-        max = Math.max.apply(null, allAreas);
+        var max = Math.max.apply(null, allAreas);
         var maxIndex = allAreas.indexOf(max);
         allAreas.splice(maxIndex, 1);//this is the outer region
         max = Math.max.apply(null, allAreas);
-        console.log(max);
         if (max < 3000) return -1;//too small
 
-        return outlineOffset;
+        return maxSegment;//area of loop
     }
 
     return {
