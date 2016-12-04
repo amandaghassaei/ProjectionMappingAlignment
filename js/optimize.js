@@ -25,7 +25,7 @@ function initOptimizer(fitness){
     var originVis, crosshairVis;
 
     function optimize(params, stepSize){
-        
+
         webcam.pause();
 
         if (!mesh) return;
@@ -118,7 +118,7 @@ function initOptimizer(fitness){
         var nextVal = current + stepSize;
         if (k == 1) nextVal = current - stepSize;
         sliderInputs[key](nextVal);
-        sliderInputs['#outlineOffset'](0);//start at zero offset
+        sliderInputs['#outlineOffset'](bestStats[1]-1);//start at one offset less than current best
         window.requestAnimationFrame(function() {
             evaluate(function (newFitness, newOffset) {
                 sliderInputs[key](current);//reset back to original
