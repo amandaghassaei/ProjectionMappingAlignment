@@ -273,7 +273,7 @@ function loadOBJ(url){
         mesh.children[0].position.z = mesh.children[0].geometry.boundingBox.max.z*scalingFactor*geoOffset.z;
 
         mesh.position.set(0,0,0);
-        mesh.rotation.set(0,rotation*Math.PI/180,0);
+        mesh.rotation.set(0,rotationZero + rotation,0);
 
         fitness.setMesh(mesh);
 

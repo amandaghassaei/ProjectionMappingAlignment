@@ -4,7 +4,7 @@
 
 var brightness = 255;
 var opacity = 1;
-var rotation = 1;
+var rotation = 0;
 var rotationZero = 0;
 var geoOffset = new THREE.Vector3(-0.462,0,-0.18);
 var scale = 1;
@@ -21,6 +21,7 @@ var cameraPosition = new THREE.Vector3(0,172.97,776.17);
 var lookAt = new THREE.Vector3(7.35,90.24,0);
 
 var sliderInputs = [];
+var currentValues = [];
 
 function initControls(ambientLight){
 
@@ -281,6 +282,7 @@ function setLogSliderInput(id, val, min, max, incr, callback){
 }
 
 function setSliderInput(el, val, min, max, step, callback){
+    currentValues[el] = val;
     var slider = $(el+">.flat-slider").slider({
         orientation: 'horizontal',
         range: false,
@@ -291,6 +293,7 @@ function setSliderInput(el, val, min, max, step, callback){
     });
     var $input = $(el+">input");
     sliderInputs[el] = function(_manualVal){
+        currentValues[el] = _manualVal;
         $input.val(_manualVal);
         slider.slider('value', _manualVal);
         callback(_manualVal);
@@ -298,6 +301,7 @@ function setSliderInput(el, val, min, max, step, callback){
     $input.val(val);
     slider.on("slide", function(){
         var val  = slider.slider('value');
+        currentValues[el] = val;
         callback(val);
         $input.val(val);
     });
@@ -309,6 +313,7 @@ function setSliderInput(el, val, min, max, step, callback){
             return;
         }
         slider.slider('value', val);
+        currentValues[el] = val;
         callback(val);
     });
     return slider;

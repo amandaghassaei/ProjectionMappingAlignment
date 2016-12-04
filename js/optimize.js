@@ -5,8 +5,9 @@
 
 function initOptimizer(fitness){
 
-    var initialFitness;
     var running = false;
+    var solutions = [-1, -1, -1, -1];
+    var angles = [0, Math.PI/2, Math.PI, 3*Math.PI/2];
 
     var originVis, crosshairVis;
 
@@ -28,48 +29,83 @@ function initOptimizer(fitness){
         running = true;
 
         sliderInputs['#outlineOffset'](0);//start at zero
-
-        initialFitness = -1;
         window.requestAnimationFrame(function(){
-            getInitialFitness(function(){
+            evaluate(function(initialFitness, initialOffset){
                 if (initialFitness == -1) {
                     showWarn("bad initial fitness");
                     console.warn("bad initial fitness");
                     pause();
                     return;
                 }
-                console.log(initialFitness);
-                pause();
+                resetSolver();
+                gradient(params, initialFitness, initialOffset, 0.2);
             }, 0);
         });
     }
 
-    function getInitialFitness(callback, phase){
+    function resetSolver(){
+        solutions = [-1, -1, -1, -1];
+    }
+
+    function gradient(params, bestFitness, bestOffset, stepSize){
+        // for (var i=0;i<angles.length;i++){
+            //todo rotate to angle
+
+        var allFitnesses = [];
+        var j = 0;
+        var k = 0;
+
+        allFitnesses.push([]);
+
+        _gradient(params, j, k, stepSize);
+
+
+        // }
+    }
+
+    function _gradient(params, j, k, stepSize){
+        var key = "#" + params[j];
+        var current = currentValues[key];
+        var nextVal = current + stepSize;
+        if (k == 1) nextVal = current - stepSize;
+        sliderInputs[key](nextVal);
+        sliderInputs['#outlineOffset'](0);//start at zero offset
+        window.requestAnimationFrame(function() {
+            evaluate(function (newFitness, offset) {
+                sliderInputs[key](current);//reset back to original
+                if (k==0) _gradient(params, j, 1, stepSize);
+                else if (j<params.length-1) _gradient(params, j+1, 0, stepSize);
+                else pause();
+            }, 0);
+        });
+    }
+
+    function evaluate(callback, phase){
         if (!running) return;
         if (phase < 1){//render
-            // fitness.calcFitness();
             render();
+            webcam.getFrame();
             setTimeout(function(){//waste time to make sure we get next webcam frame
                 window.requestAnimationFrame(function(){
-                    getInitialFitness(callback, phase+1);
+                    evaluate(callback, phase+1);
                 });
             }, 500);
         } else {
-            initialFitness = fitness.calcFitness();
+            var _fitness = fitness.calcFitness();
             var currentOffset = fitness.getOutlineOffset();
-            showWarn("offset: " + currentOffset + ", fitness:" + initialFitness);
-            if (initialFitness < 0) {
+            showWarn("offset: " + currentOffset + ", fitness:" + _fitness);
+            if (_fitness < 0) {
                 var nextOutlineOffset = currentOffset + 1;
                 if (nextOutlineOffset > 80){
-                    callback();
+                    callback(_fitness, currentOffset);
                     return;
                 }
                 sliderInputs['#outlineOffset'](nextOutlineOffset);
                 window.requestAnimationFrame(function(){
-                    getInitialFitness(callback, 0);
+                    evaluate(callback, 0);
                 });
             }
-            else callback();
+            else callback(_fitness, currentOffset);
         }
     }
 
