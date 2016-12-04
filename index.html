@@ -45,6 +45,14 @@
     <span id="instructions"> Instructions: load obj, then hit load material - either select one img file or select a mtl and its dds files at once - the dds and mtl files must be in the same directory.<br/><br/>
         Lightning bolt icons <b>start auto optimization process</b>, with step size indicated to the right of each icon.  Press spacebar to cancel optimization.<br/><br/>
         <b>To change webcam input</b> (Chrome): go to Preferences > Show Advanced Settings... > Privacy > Content Settings... > Camera and select from dropdown.<br/><br/>
+        <b>To setup Node server</b> (mac instructions):
+        install node: <span class="code">brew install node</span><br/>
+        navigate to the 'node' folder in this app's file directory in the Terminal: <span class="code">cd node</span><br/>
+        install socket.io: <span class="code">npm install socket.io</span><br/>
+        install SerialPort: <span class="code">npm install serialport</span><br/>
+        run node server: <span class="code">node nodeServer.js</span> (do this from inside the node directory in the app)<br/>
+        select serial port from dropdown below<br/>
+        <br/>
         <b>To run in VR mode</b>: run in a browser that supports <a href="https://webvr.info/">WebVR API</a> (tested in Chromium experimental build on Windows).  Select "Enter VR" when button appears.
     </span>
 
@@ -58,7 +66,15 @@
     </div>
     <br/>
 
-
+    Current Port: &nbsp;<span id="portName">not connected</span><br/>
+    <div id="serialDropdown" class="dropdown">
+      <a class="dropbtn">Select Serial Port</a>
+      <div id="myDropdown" class="dropdown-content">
+        <a href="#">Link 1</a>
+        <a href="#">Link 2</a>
+        <a href="#">Link 3</a>
+      </div>
+    </div>
     <div id="rotation">rotation
     <div class="flat-slider ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"></div>
     <input class="numInput" type="text">

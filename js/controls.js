@@ -79,19 +79,21 @@ function initControls(ambientLight){
 
     setSliderInput("#rotationZero", rotationZero, 0, 2*Math.PI, 0.01, function(val){
         rotationZero = val;
-        mesh.rotation.set(0,rotationZero + rotation,0);
-        render();
+        if (mesh) {
+            mesh.rotation.set(0,rotationZero + rotation,0);
+            render();
+        }
     });
 
     socket.on("dataIn", function(data){
         var json = JSON.parse(data);
         if (json.sr && json.sr.posx){
+            sliderInputs["#rotation"](json.sr.posx);
             mesh.rotation.set(0,rotationZero + json.sr.posx,0);
             render();
         }
     });
     setSliderInput("#rotation", rotation, 0, 2*Math.PI, 0.01, function(val){
-        rotation = val;
         if (mesh) {
             // mesh.rotation.set(0,rotation,0);
             socket.emit('rotation', "g0 x" + rotation);
@@ -225,6 +227,28 @@ function initControls(ambientLight){
         render();
     });
 
+
+    /* When the user clicks on the button,
+    toggle between hiding and showing the dropdown content */
+    $("#serialDropdown").click(function(e) {
+        e.preventDefault();
+        document.getElementById("myDropdown").classList.toggle("show");
+    });
+
+    // Close the dropdown menu if the user clicks outside of it
+    window.onclick = function(event) {
+      if (!event.target.matches('.dropbtn')) {
+
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        var i;
+        for (i = 0; i < dropdowns.length; i++) {
+          var openDropdown = dropdowns[i];
+          if (openDropdown.classList.contains('show')) {
+            openDropdown.classList.remove('show');
+          }
+        }
+      }
+    }
 }
 
 function showWarn(text){

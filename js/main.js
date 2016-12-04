@@ -75,9 +75,19 @@ function init() {
     });
 
     socket = io('http://localhost:8080', {'forceNew':true});
-    socket.on('connect', function(data){
+    socket.on('connected', function(data){
         showWarn("connected to node server");
         console.log("connected to node server");
+        $("#portName").html(data.portName);
+        var items = "";
+        for (var i=0;i<data.availablePorts.length;i++){
+            items += "<a href='#' class='portSelection'>" + data.availablePorts[i] + "</a>";
+        }
+        $("#myDropdown").html(items);
+        $(".portSelection").click(function(e){
+            e.preventDefault();
+            socket.emit("portName", $(e.target).html());
+        })
     });
 
     initControls(ambient, mesh);

@@ -9,7 +9,7 @@ var io = require('socket.io')(app);
 app.listen(8080);
 
 //defaults
-var portName = null;
+var portName = "/dev/cu.usbserial-DA00XAJE";
 var currentPort = null;
 var baudRate = 115200;
 
@@ -17,7 +17,12 @@ io.on('connection', function(socket){
 
     var allPorts = [];
     refreshAvailablePorts(function(_allPorts, _portName, _baudRate){
-        currentPort = changePort(_portName, _baudRate);
+        if (checkThatPortExists(_portName)){
+            currentPort = changePort(_portName, _baudRate);
+        } else {
+            portName = _allPorts[0];
+            currentPort = changePort(portName, _baudRate);
+        }
         console.log(allPorts);
     });
 
@@ -83,7 +88,6 @@ io.on('connection', function(socket){
             allPorts = _allPorts;
 
             if (!portName && _allPorts.length>0) portName = _allPorts[0];
-            portName = "/dev/cu.usbserial-DA00XAJE";
             if (callback) callback(allPorts, portName, baudRate);
 
             io.emit('connected', {
