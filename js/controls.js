@@ -221,7 +221,8 @@ function initControls(ambientLight){
         else $crosshairs.hide();
     });
 
-    $('#showGeoOrigin').prop('checked', true);
+    $('#showGeoOrigin').prop('checked', false);
+    origin.visible = false;
     $('#showGeoOrigin').change(function() {
         origin.visible = this.checked;
         render();

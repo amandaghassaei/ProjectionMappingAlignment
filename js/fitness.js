@@ -94,12 +94,17 @@ function initFitness(){
         render();
     });
 
-    $('#showOutline').prop('checked', true);
+    $('#showOutline').prop('checked', false);
     $('#showOutline').change(function() {
-        outlineMaterial.visible = this.checked;
-        shadowMaterial.visible = this.checked;
+        setVisiblity(this.checked);
         render();
     });
+    setVisiblity(false);
+
+    function setVisiblity(state){
+        outlineMaterial.visible = state;
+        shadowMaterial.visible = state;
+    }
 
     function groupRegions(segmentNum, img_u8){
         var numIter = 0;
