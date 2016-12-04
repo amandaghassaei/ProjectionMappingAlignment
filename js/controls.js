@@ -28,7 +28,6 @@ function initControls(ambientLight){
     window.addEventListener("keyup", function(e){
         // console.log(e.keyCode);
         if (e.keyCode == 72){//h
-            if (optimizer.isRunning()) optimizer.pause();
             if ($("#controls").is(":visible")) {
                 $("#controls").fadeOut();
                 $("#cameraControls").fadeOut();
@@ -39,6 +38,8 @@ function initControls(ambientLight){
             }
         } else if (e.keyCode == 70){
             toggleFullScreen();
+        } else if (e.keyCode == 32){
+            if (optimizer.isRunning()) optimizer.pause();
         }
     }, true);
 
