@@ -11,6 +11,9 @@ function initFitness(){
     var outlineWidth = 10;
     var outlineOffset = 10;
 
+    function getOutlineOffset(){
+        return outlineOffset;
+    }
 
     var vertexShader =
         "uniform float offset;" +
@@ -216,6 +219,7 @@ function initFitness(){
     return {
         setMesh: setMesh,
         sync: sync,
-        calcFitness: calcFitness
+        calcFitness: calcFitness,
+        getOutlineOffset: getOutlineOffset
     }
 }
