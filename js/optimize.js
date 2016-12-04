@@ -38,26 +38,36 @@ function initOptimizer(fitness){
                     pause();
                     return;
                 }
-                
-            });
+                console.log(initialFitness);
+                pause();
+            }, 0);
         });
     }
 
-    function getInitialFitness(callback){
+    function getInitialFitness(callback, phase){
         if (!running) return;
-        initialFitness = fitness.calcFitness();
-        if (initialFitness < 0) {
-            var nextOutlineOffset = fitness.getOutlineOffset() + 1;
-            if (nextOutlineOffset > 80){
-                callback();
-                return;
-            }
-            sliderInputs['#outlineOffset'](nextOutlineOffset);
+        if (phase < 1){//render
+            webcam.getFrame();
+            render();
             window.requestAnimationFrame(function(){
-                getInitialFitness(callback);
+                getInitialFitness(callback, phase+1);
             });
+        } else {
+            initialFitness = fitness.calcFitness();
+            showWarn(initialFitness);
+            if (initialFitness < 0) {
+                var nextOutlineOffset = fitness.getOutlineOffset() + 1;
+                if (nextOutlineOffset > 80){
+                    callback();
+                    return;
+                }
+                sliderInputs['#outlineOffset'](nextOutlineOffset);
+                window.requestAnimationFrame(function(){
+                    getInitialFitness(callback, 0);
+                });
+            }
+            else callback();
         }
-        else callback();
     }
 
     function pause(){

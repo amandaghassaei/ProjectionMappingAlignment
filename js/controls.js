@@ -17,8 +17,8 @@ var orthoZoom = 1;
 
 var isPerspective = true;
 
-var cameraPosition = new THREE.Vector3(0,140,790);
-var lookAt = new THREE.Vector3(-19.1,115.79,0);
+var cameraPosition = new THREE.Vector3(0,172.97,776.17);
+var lookAt = new THREE.Vector3(7.35,90.24,0);
 
 var sliderInputs = [];
 
