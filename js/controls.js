@@ -248,7 +248,16 @@ function initControls(ambientLight){
           }
         }
       }
-    }
+    };
+
+    $("#showInstructions").click(function(e){
+        e.preventDefault();
+        if ($("#instructions").is(":visible")){
+            $("#instructions").hide();
+        } else {
+            $("#instructions").show();
+        }
+    })
 }
 
 function showWarn(text){
