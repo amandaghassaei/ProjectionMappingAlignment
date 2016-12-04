@@ -28,7 +28,10 @@ function initOptimizer(fitness){
 
         webcam.pause();
 
-        if (!mesh) return;
+        if (!mesh) {
+            showWarn("upload a mesh before starting optimization");
+            return;
+        }
         mesh.visible = false;
         originVis = origin.visible;
         origin.visible = false;
