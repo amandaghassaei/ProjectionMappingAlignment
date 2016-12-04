@@ -78,6 +78,7 @@ function init() {
     socket.on('connected', function(data){
         showWarn("connected to node server");
         console.log("connected to node server");
+        $("#serialDropdown").show();
         $("#portName").html(data.portName);
         var items = "";
         for (var i=0;i<data.availablePorts.length;i++){

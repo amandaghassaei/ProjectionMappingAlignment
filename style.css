@@ -188,9 +188,9 @@ b{
     font-size: 16px;
     border: none;
     cursor: pointer;
-    width:270px;
+    width:100%;
     display: inline-block;
-    text-align: left;
+    text-align: right;
 }
 
 /* Dropdown button on hover & focus */
@@ -202,7 +202,7 @@ b{
 .dropdown {
     position: relative;
     display: inline-block;
-    width: 270px;
+    width: 100%;
 }
 
 /* Dropdown Content (Hidden by Default) */
@@ -231,5 +231,8 @@ b{
 .show {display:block;}
 
 #instructions{
+    display: none;
+}
+#serialDropdown{
     display: none;
 }
