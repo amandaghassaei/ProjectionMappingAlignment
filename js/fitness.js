@@ -8,7 +8,7 @@ function initFitness(){
     var fitnessMesh;
     var shadowMesh;
 
-    var outlineWidth = 10;
+    var outlineWidth = 5;
     var outlineOffset = 10;
 
     function getOutlineOffset(){

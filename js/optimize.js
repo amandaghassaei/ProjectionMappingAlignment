@@ -47,16 +47,19 @@ function initOptimizer(fitness){
     function getInitialFitness(callback, phase){
         if (!running) return;
         if (phase < 1){//render
-            webcam.getFrame();
+            // fitness.calcFitness();
             render();
-            window.requestAnimationFrame(function(){
-                getInitialFitness(callback, phase+1);
-            });
+            setTimeout(function(){//waste time to make sure we get next webcam frame
+                window.requestAnimationFrame(function(){
+                    getInitialFitness(callback, phase+1);
+                });
+            }, 500);
         } else {
             initialFitness = fitness.calcFitness();
-            showWarn(initialFitness);
+            var currentOffset = fitness.getOutlineOffset();
+            showWarn("offset: " + currentOffset + ", fitness:" + initialFitness);
             if (initialFitness < 0) {
-                var nextOutlineOffset = fitness.getOutlineOffset() + 1;
+                var nextOutlineOffset = currentOffset + 1;
                 if (nextOutlineOffset > 80){
                     callback();
                     return;
