@@ -47,23 +47,33 @@ function initOptimizer(fitness){
         solutions = [-1, -1, -1, -1];
     }
 
+    function moveParams(allFitnesses, stepSize){
+        console.log(allFitnesses);
+        pause();
+    }
+
     function gradient(params, bestFitness, bestOffset, stepSize){
         // for (var i=0;i<angles.length;i++){
             //todo rotate to angle
 
+        console.log(bestOffset);
+        console.log(bestFitness);
+
         var allFitnesses = [];
+
+        for (var j=0;j<params.length;j++){
+            allFitnesses.push([]);
+        }
         var j = 0;
         var k = 0;
 
-        allFitnesses.push([]);
-
-        _gradient(params, j, k, stepSize);
+        _gradient(params, j, k, stepSize, allFitnesses, [bestFitness, bestOffset]);
 
 
         // }
     }
 
-    function _gradient(params, j, k, stepSize){
+    function _gradient(params, j, k, stepSize, allFitnesses, bestStats){
         var key = "#" + params[j];
         var current = currentValues[key];
         var nextVal = current + stepSize;
@@ -71,13 +81,23 @@ function initOptimizer(fitness){
         sliderInputs[key](nextVal);
         sliderInputs['#outlineOffset'](0);//start at zero offset
         window.requestAnimationFrame(function() {
-            evaluate(function (newFitness, offset) {
+            evaluate(function (newFitness, newOffset) {
                 sliderInputs[key](current);//reset back to original
-                if (k==0) _gradient(params, j, 1, stepSize);
-                else if (j<params.length-1) _gradient(params, j+1, 0, stepSize);
-                else pause();
+                allFitnesses[j].push([newFitness, newOffset]);
+                if (k==0 && !isBetter([newFitness, newOffset], bestStats)) {
+                    _gradient(params, j, 1, stepSize, allFitnesses, bestStats);
+                } else if (j<params.length-1) _gradient(params, j+1, 0, stepSize, allFitnesses, bestStats);
+                else moveParams(allFitnesses, stepSize);
             }, 0);
         });
+    }
+
+    function isBetter(newData, oldData){
+        if (newData[1] < oldData[1]) return true;//offset
+        if (newData[1] == oldData[1]){
+            if (newData[0] > oldData[0]) return true;//num pixels
+        }
+        return false;
     }
 
     function evaluate(callback, phase){
