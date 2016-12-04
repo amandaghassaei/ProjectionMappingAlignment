@@ -8,10 +8,24 @@ function initOptimizer(fitness){
     var running = false;
     var angles = [0, Math.PI/2, Math.PI, 3*Math.PI/2];
 
+    var rotationZeroTol = 0.1;
+    setInput("#rotationZeroTol", rotationZeroTol, function(val){
+        rotationZeroTol = val;
+    });
+    var cameraTol = 1;
+    setInput("#cameraTol", cameraTol, function(val){
+        cameraTol = val;
+    });
+    var lookatTol = 1;
+    setInput("#lookAtTol", lookatTol, function(val){
+        lookatTol = val;
+    });
+
+
     var originVis, crosshairVis;
 
-    function optimize(params){
-
+    function optimize(params, stepSize){
+        
         webcam.pause();
 
         if (!mesh) return;
@@ -36,7 +50,7 @@ function initOptimizer(fitness){
                     pause();
                     return;
                 }
-                gradient(params, initialFitness, initialOffset, 0.4);
+                gradient(params, initialFitness, initialOffset, stepSize);
             }, 0);
         });
     }
@@ -175,20 +189,24 @@ function initOptimizer(fitness){
         var $target = $(e.target);
         var id = $target.parent().data("id");
         var params = [];
+        var stepSize;
         if (id == "camera"){
             params.push("cameraX");
             params.push("cameraY");
             params.push("cameraZ");
+            stepSize = cameraTol;
         } else if (id == "lookAt"){
             params.push("lookAtX");
             params.push("lookAtY");
+            stepSize = lookatTol;
         } else if (id == "rotationZero"){
             params.push("rotationZero");
+            stepSize = rotationZeroTol;
         } else {
             showWarn("unknown optimization parameter " + id);
             console.warn("unknown optimization parameter " + id);
         }
-        optimize(params);
+        optimize(params, stepSize);
     });
 
     return {

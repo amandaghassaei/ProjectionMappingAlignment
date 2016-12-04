@@ -76,7 +76,8 @@ function init() {
 
     socket = io('http://localhost:8080', {'forceNew':true});
     socket.on('connect', function(data){
-        console.log("connected");
+        showWarn("connected to node server");
+        console.log("connected to node server");
     });
 
     initControls(ambient, mesh);
