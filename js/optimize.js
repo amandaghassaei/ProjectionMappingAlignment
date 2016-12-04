@@ -6,7 +6,6 @@
 function initOptimizer(fitness){
 
     var running = false;
-    var solutions = [-1, -1, -1, -1];
     var angles = [0, Math.PI/2, Math.PI, 3*Math.PI/2];
 
     var originVis, crosshairVis;
@@ -37,27 +36,54 @@ function initOptimizer(fitness){
                     pause();
                     return;
                 }
-                resetSolver();
-                gradient(params, initialFitness, initialOffset, 0.2);
+                gradient(params, initialFitness, initialOffset, 0.4);
             }, 0);
         });
     }
 
-    function resetSolver(){
-        solutions = [-1, -1, -1, -1];
-    }
+    function moveParams(params, allFitnesses, bestStats, stepSize){
 
-    function moveParams(allFitnesses, stepSize){
-        console.log(allFitnesses);
-        pause();
+        var vector = [];
+        for (var i=0;i<params.length;i++){
+            var paramData = allFitnesses[i];
+            var bestParamData = paramData[paramData.length-1];
+            if (isBetter(bestParamData, bestStats)){
+                if (paramData.length == 1) vector.push(1);
+                else vector.push(-1);
+            } else {
+                vector.push(0);
+            }
+        }
+        var vectorLength = 0;
+        for (var i=0;i<vector.length;i++){
+            vectorLength += vector[i]*vector[i];
+        }
+        vectorLength = Math.sqrt(vectorLength);
+
+        console.log(vector);
+        if (vectorLength == 0){
+            //opt found
+            pause();
+            return;
+        }
+
+        //normalize to step size and set vars
+        for (var i=0;i<vector.length;i++){
+            vector[i] *= stepSize/vectorLength;
+            var key = "#" + params[i];
+            sliderInputs[key](currentValues[key] + vector[i]);
+        }
+
+        window.requestAnimationFrame(function() {
+            evaluate(function (newFitness, newOffset) {
+                gradient(params, newFitness, newOffset, stepSize);
+            }, 0);
+        });
     }
 
     function gradient(params, bestFitness, bestOffset, stepSize){
         // for (var i=0;i<angles.length;i++){
             //todo rotate to angle
-
-        console.log(bestOffset);
-        console.log(bestFitness);
 
         var allFitnesses = [];
 
@@ -68,7 +94,6 @@ function initOptimizer(fitness){
         var k = 0;
 
         _gradient(params, j, k, stepSize, allFitnesses, [bestFitness, bestOffset]);
-
 
         // }
     }
@@ -87,7 +112,7 @@ function initOptimizer(fitness){
                 if (k==0 && !isBetter([newFitness, newOffset], bestStats)) {
                     _gradient(params, j, 1, stepSize, allFitnesses, bestStats);
                 } else if (j<params.length-1) _gradient(params, j+1, 0, stepSize, allFitnesses, bestStats);
-                else moveParams(allFitnesses, stepSize);
+                else moveParams(params, allFitnesses, bestStats, stepSize);
             }, 0);
         });
     }
@@ -113,10 +138,10 @@ function initOptimizer(fitness){
         } else {
             var _fitness = fitness.calcFitness();
             var currentOffset = fitness.getOutlineOffset();
-            showWarn("offset: " + currentOffset + ", fitness:" + _fitness);
+            showWarn("offset: " + currentOffset + ", fitness: " + _fitness);
             if (_fitness < 0) {
                 var nextOutlineOffset = currentOffset + 1;
-                if (nextOutlineOffset > 80){
+                if (nextOutlineOffset > 30){
                     callback(_fitness, currentOffset);
                     return;
                 }
