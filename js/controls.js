@@ -300,12 +300,13 @@ function setSliderInput(el, val, min, max, step, callback){
         callback(_manualVal);
     };
     $input.val(val);
-    slider.on("slide", function(){
-        var val  = slider.slider('value');
+    slider.on("slide", function(e, ui){
+        var val  = ui.value;
         currentValues[el] = val;
         callback(val);
         $input.val(val);
     });
+    
     $input.change(function(){
         var val = $input.val();
         if (isNaN(val)){
