@@ -43,6 +43,7 @@ io.on('connection', function(socket){
     });
 
     socket.on('rotation', function(data){
+        console.log(data);
         outputData(data);
     });
 

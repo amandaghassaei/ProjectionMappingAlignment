@@ -122,7 +122,9 @@ function initOptimizer(fitness){
         var nextVal = current + stepSize;
         if (k == 1) nextVal = current - stepSize;
         sliderInputs[key](nextVal);
-        sliderInputs['#outlineOffset'](bestStats[1]-1);//start at one offset less than current best
+        var nextOffset = bestStats[1]-1;
+        if (nextOffset<0) nextOffset = 0;
+        sliderInputs['#outlineOffset'](nextOffset);//start at one offset less than current best
         window.requestAnimationFrame(function() {
             evaluate(function (newFitness, newOffset) {
                 sliderInputs[key](current);//reset back to original
@@ -131,7 +133,7 @@ function initOptimizer(fitness){
                     _gradient(params, j, 1, stepSize, allFitnesses, bestStats);
                 } else if (j<params.length-1) _gradient(params, j+1, 0, stepSize, allFitnesses, bestStats);
                 else moveParams(params, allFitnesses, bestStats, stepSize);
-            }, 0);
+            }, 0, bestStats);
         });
     }
 
@@ -143,14 +145,14 @@ function initOptimizer(fitness){
         return false;
     }
 
-    function evaluate(callback, phase){
+    function evaluate(callback, phase, bestStats){
         if (!running) return;
         if (phase < 1){//render
             render();
             webcam.getFrame();
             setTimeout(function(){//waste time to make sure we get next webcam frame
                 window.requestAnimationFrame(function(){
-                    evaluate(callback, phase+1);
+                    evaluate(callback, phase+1, bestStats);
                 });
             }, 500);
         } else {
@@ -159,13 +161,17 @@ function initOptimizer(fitness){
             showWarn("offset: " + currentOffset + ", fitness: " + _fitness);
             if (_fitness < 0) {
                 var nextOutlineOffset = currentOffset + 1;
+                if (bestStats && nextOutlineOffset>bestStats[1]){
+                    callback(-1, nextOutlineOffset);
+                    return;
+                }
                 if (nextOutlineOffset > 30){
                     callback(_fitness, currentOffset);
                     return;
                 }
                 sliderInputs['#outlineOffset'](nextOutlineOffset);
                 window.requestAnimationFrame(function(){
-                    evaluate(callback, 0);
+                    evaluate(callback, 0, bestStats);
                 });
             }
             else callback(_fitness, currentOffset);
