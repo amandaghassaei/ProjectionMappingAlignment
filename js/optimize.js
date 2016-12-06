@@ -20,6 +20,10 @@ function initOptimizer(fitness){
     setInput("#lookAtTol", lookatTol, function(val){
         lookatTol = val;
     });
+    var cameraRotationTol = 0.1;
+    setInput("#cameraRotationTol", cameraRotationTol, function(val){
+        cameraRotationTol = val;
+    });
 
 
     var originVis, crosshairVis;
@@ -209,12 +213,16 @@ function initOptimizer(fitness){
             params.push("lookAtX");
             params.push("lookAtY");
             stepSize = lookatTol;
-        } else if (id == "rotationZero"){
+        } else if (id == "rotationZero") {
             params.push("rotationZero");
             stepSize = rotationZeroTol;
+        } else if (id == "cameraRotation") {
+            params.push("cameraRotation");
+            stepSize = cameraRotationTol;
         } else {
             showWarn("unknown optimization parameter " + id);
             console.warn("unknown optimization parameter " + id);
+            return;
         }
         optimize(params, stepSize);
     });
