@@ -96,7 +96,8 @@ function init() {
     fitness = initFitness();
     optimizer = initOptimizer(fitness);
 
-    //render();
+    loadOBJ("data/ballerina/ballerina_orig_10percentwTex.obj");
+    loadImage("data/ballerina/ballerina_small.png");
 }
 
 function handleFileSelectMaterials(evt) {

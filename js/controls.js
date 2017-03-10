@@ -5,7 +5,7 @@
 var brightness = 255;
 var opacity = 1;
 var rotation = 0;
-var rotationZero = 1;
+var rotationZero = 0;
 var geoOffset = new THREE.Vector3(-0.462,0,-0.18);
 var scale = 1;
 
@@ -89,6 +89,7 @@ function initControls(ambientLight){
     setSliderInput("#rotationZero", rotationZero, 0, 2*Math.PI, 0.01, function(val){
         rotationZero = val;
         if (mesh) {
+            console.log(rotationZero + rotation);
             mesh.rotation.set(0,rotationZero + rotation,0);
             render();
         }
@@ -97,15 +98,16 @@ function initControls(ambientLight){
     socket.on("dataIn", function(data){
         var json = JSON.parse(data);
         if (json.sr && json.sr.posx){
-            sliderInputs["#rotation"](json.sr.posx);
-            mesh.rotation.set(0,rotationZero + json.sr.posx,0);
+            // sliderInputs["#rotation"](json.sr.posx);
+            rotation = json.sr.posx;
+            console.log(rotationZero + rotation);
+            mesh.rotation.set(0,rotationZero + rotation,0);
             render();
         }
     });
     setSliderInput("#rotation", rotation, 0, 2*Math.PI, 0.01, function(val){
         if (mesh) {
-            // mesh.rotation.set(0,rotation,0);
-            socket.emit('rotation', "g0 x" + rotation);
+            socket.emit('rotation', "g0 x" + val);
         }
         render();
     });
