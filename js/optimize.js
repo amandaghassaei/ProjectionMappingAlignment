@@ -41,47 +41,66 @@ function initOptimizer(fitness){
         origin.visible = false;
         crosshairVis = $("#crosshairs").is(":visible");
         $("#crosshairs").hide();
+        fitness.setVisiblity(true);
+        $('#showOutline').prop('checked', true);
+        render();
 
-        // $("#controls").hide();
+        $("#controls").hide();
         $("#cameraControls").hide();
         $("#warning").hide();
 
         running = true;
 
         sliderInputs['#outlineOffset'](0);//start at zero
-        window.requestAnimationFrame(function(){
-            evaluate(function(initialFitness, initialOffset){
-                if (initialFitness == -1) {
-                    showWarn("bad initial fitness");
-                    console.warn("bad initial fitness");
-                    pause();
-                    return;
-                }
-                gradient(params, initialFitness, initialOffset, stepSize);
-            }, 0);
-        });
+
+        console.log('rotation', "g0 x" + angles[0]);
+        socket.emit('rotation', "g0 x" + angles[0]);
+        setTimeout(function(){//waste time to make sure we get rotation done
+            window.requestAnimationFrame(function(){
+                evaluate(function(initialFitness, initialOffset){
+                    if (initialFitness == -1) {
+                        showWarn("bad initial fitness");
+                        pause();
+                        return;
+                    }
+                    gradient(params, initialFitness, initialOffset, stepSize);
+                }, 0);
+            });
+        }, 500);
+
+
     }
 
     function moveParams(params, allFitnesses, bestStats, stepSize){
 
-        var vector = [];
-        for (var i=0;i<params.length;i++){
-            var paramData = allFitnesses[i];
-            var bestParamData = paramData[paramData.length-1];
-            if (isBetter(bestParamData, bestStats)){
-                if (paramData.length == 1) vector.push(1);
-                else vector.push(-1);
-            } else {
-                vector.push(0);
+        var avgVector = [];
+        for (var j = 0; j < params.length; j++) {
+            avgVector.push(0);
+        }
+
+        for (var i=0;i<angles.length;i++) {
+            var vector = [];
+            for (var j = 0; j < params.length; j++) {
+                var paramData = allFitnesses[i][j];
+                var bestParamData = paramData[paramData.length - 1];
+                if (isBetter(bestParamData, bestStats)) {
+                    if (paramData.length == 1) vector.push(1);
+                    else vector.push(-1);
+                } else {
+                    vector.push(0);
+                }
+            }
+            for (var j = 0; j < params.length; j++) {
+                avgVector[j] += vector[j];
             }
         }
         var vectorLength = 0;
-        for (var i=0;i<vector.length;i++){
-            vectorLength += vector[i]*vector[i];
+        for (var i=0;i<avgVector.length;i++){
+            vectorLength += avgVector[i]*avgVector[i];
         }
         vectorLength = Math.sqrt(vectorLength);
 
-        console.log(vector);
+        console.log(avgVector);
         if (vectorLength == 0){
             //opt found
             pause();
@@ -89,13 +108,14 @@ function initOptimizer(fitness){
         }
 
         //normalize to step size and set vars
-        for (var i=0;i<vector.length;i++){
-            vector[i] *= stepSize/vectorLength;
-            var key = "#" + params[i];
-            sliderInputs[key](currentValues[key] + vector[i]);
+        for (var j=0;j<vector.length;j++){
+            vector[j] *= stepSize/vectorLength;
+            var key = "#" + params[j];
+            sliderInputs[key](currentValues[key] + vector[j]);
         }
         sliderInputs['#outlineOffset'](0);
 
+        //todo pass best stats here?
         window.requestAnimationFrame(function() {
             evaluate(function (newFitness, newOffset) {
                 gradient(params, newFitness, newOffset, stepSize);
@@ -104,23 +124,18 @@ function initOptimizer(fitness){
     }
 
     function gradient(params, bestFitness, bestOffset, stepSize){
-        // for (var i=0;i<angles.length;i++){
-            //todo rotate to angle
-
         var allFitnesses = [];
-
-        for (var j=0;j<params.length;j++){
+        for (var i=0;i<angles.length;i++){
             allFitnesses.push([]);
+            for (var j=0;j<params.length;j++){
+                allFitnesses[i].push([]);
+            }
         }
-        var j = 0;
-        var k = 0;
 
-        _gradient(params, j, k, stepSize, allFitnesses, [bestFitness, bestOffset]);
-
-        // }
+        _gradient(params, 0, 0, stepSize, allFitnesses, [bestFitness, bestOffset], 0);
     }
 
-    function _gradient(params, j, k, stepSize, allFitnesses, bestStats){
+    function _gradient(params, j, k, stepSize, allFitnesses, bestStats, i){//j = param index, k = direction, i = angleIndex
         var key = "#" + params[j];
         var current = currentValues[key];
         var nextVal = current + stepSize;
@@ -132,11 +147,20 @@ function initOptimizer(fitness){
         window.requestAnimationFrame(function() {
             evaluate(function (newFitness, newOffset) {
                 sliderInputs[key](current);//reset back to original
-                allFitnesses[j].push([newFitness, newOffset]);
-                if (k==0 && !isBetter([newFitness, newOffset], bestStats)) {
-                    _gradient(params, j, 1, stepSize, allFitnesses, bestStats);
-                } else if (j<params.length-1) _gradient(params, j+1, 0, stepSize, allFitnesses, bestStats);
-                else moveParams(params, allFitnesses, bestStats, stepSize);
+                console.log(allFitnesses);
+                console.log(i);
+                console.log(j);
+                allFitnesses[i][j].push([newFitness, newOffset]);
+                if (k == 0 && !isBetter([newFitness, newOffset], bestStats)) {
+                    _gradient(params, j, 1, stepSize, allFitnesses, bestStats, i);//try neg
+                } else if (j < params.length - 1) {
+                    _gradient(params, j + 1, 0, stepSize, allFitnesses, bestStats, i);//try other dimensions
+                } else if (i<angles.length-1) {
+                    socket.emit('rotation', "g0 x" + angles[i+1]);
+                    setTimeout(function(){//waste time to make sure we get rotation done
+                        _gradient(params, 0, 0, stepSize, allFitnesses, bestStats, i+1);
+                    }, 500);
+                } else moveParams(params, allFitnesses, bestStats, stepSize);
             }, 0, bestStats);
         });
     }
@@ -165,7 +189,7 @@ function initOptimizer(fitness){
             showWarn("offset: " + currentOffset + ", fitness: " + _fitness);
             if (_fitness < 0) {
                 var nextOutlineOffset = currentOffset + 1;
-                if (bestStats && nextOutlineOffset>bestStats[1]){
+                if (bestStats && nextOutlineOffset>bestStats[1]){//already inited
                     callback(-1, nextOutlineOffset);
                     return;
                 }

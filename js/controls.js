@@ -348,7 +348,6 @@ function setSliderInput(el, val, min, max, step, callback){
     });
     var $input = $(el+">input");
     sliderInputs[el] = function(_manualVal){
-        console.log(el + "  " + _manualVal);
         currentValues[el] = _manualVal;
         $input.val(_manualVal);
         slider.slider('value', _manualVal);

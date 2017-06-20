@@ -77,7 +77,6 @@ function init() {
     socket = io('http://localhost:8080', {'forceNew':true});
     socket.on('connected', function(data){
         showWarn("connected to node server");
-        console.log("connected to node server");
         $("#serialDropdown").show();
         $("#portName").html(data.portName);
         var items = "";
@@ -88,7 +87,11 @@ function init() {
         $(".portSelection").click(function(e){
             e.preventDefault();
             socket.emit("portName", $(e.target).html());
-        })
+        });
+
+    });
+    socket.on("portConnected", function(data){
+        socket.emit('rotation', "g0 x" + 0);
     });
 
     initControls(ambient, mesh);
@@ -254,8 +257,8 @@ function loadOBJ(url){
     //add these if you want
     var onProgress = function ( xhr ) {
         if ( xhr.lengthComputable ) {
-            var percentComplete = xhr.loaded / xhr.total * 100;
-            console.log( Math.round(percentComplete, 2) + '% downloaded' );
+            // var percentComplete = xhr.loaded / xhr.total * 100;
+            // console.log( Math.round(percentComplete, 2) + '% downloaded' );
         }
     };
     var onError = function ( xhr ) { };
