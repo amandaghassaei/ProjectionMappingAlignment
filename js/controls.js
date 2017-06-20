@@ -86,10 +86,9 @@ function initControls(ambientLight){
         render();
     });
 
-    setSliderInput("#rotationZero", rotationZero, 0, 2*Math.PI, 0.01, function(val){
+    setSliderInput("#rotationZero", rotationZero, 0, 2*Math.PI, 2*Math.PI/400, function(val){
         rotationZero = val;
         if (mesh) {
-            console.log(rotationZero + rotation);
             mesh.rotation.set(0,rotationZero + rotation,0);
             render();
         }
@@ -97,10 +96,8 @@ function initControls(ambientLight){
 
     socket.on("dataIn", function(data){
         var json = JSON.parse(data);
-        if (json.sr && json.sr.posx){
-            // sliderInputs["#rotation"](json.sr.posx);
+        if (json.sr && json.sr.posx !== undefined){
             rotation = json.sr.posx;
-            console.log(rotationZero + rotation);
             mesh.rotation.set(0,rotationZero + rotation,0);
             render();
         }
