@@ -17,10 +17,10 @@ function initWebcam(){
     }
 
     var redThreshold = 200;
-    var antiOcclusionX = 222;
-    var antiOcclusionY = 172;
-    var antiOcclusionWidth = 65;
-    var antiOcclusionHeight = 89;
+    var antiOcclusionX = 161;
+    var antiOcclusionY = 185;
+    var antiOcclusionWidth = 86;
+    var antiOcclusionHeight = 42;
 
     var video = document.getElementById('webcam');
     var canvas = document.getElementById('canvas');

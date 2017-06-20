@@ -217,6 +217,7 @@ function initFitness(){
         allAreas.splice(maxIndex, 1);//this is the outer region
         max = Math.max.apply(null, allAreas);
         if (max < 3000) {
+            console.log(max);
             console.warn("max seg too small");
             return -1;
         }//too small

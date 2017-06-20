@@ -5,7 +5,7 @@
 var brightness = 255;
 var opacity = 1;
 var rotation = 0;
-var rotationZero = 0;
+var rotationZero = 1.727;
 var geoOffset = new THREE.Vector3(-0.462,0,-0.18);
 var scale = 1;
 
@@ -19,8 +19,8 @@ var orthoZoom = 1.02;
 
 var isPerspective = true;
 
-var cameraPosition = new THREE.Vector3(64,139, 609);
-var lookAt = new THREE.Vector3(7.35,90.24,0);
+var cameraPosition = new THREE.Vector3(75.5, 94.5, 938);
+var lookAt = new THREE.Vector3(2.14,101.93,0);
 
 var sliderInputs = [];
 var currentValues = [];
